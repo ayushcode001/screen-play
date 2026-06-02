@@ -360,7 +360,7 @@
   }
 
   .script-page {
-    width: 680px;
+    width: 816px;  /* US Letter 8.5" at 96dpi */
     max-width: 100%;
     margin: 0 auto;
     background: var(--paper);
@@ -368,47 +368,59 @@
       0 0 0 1px rgba(0,0,0,0.1),
       var(--shadow-lg),
       0 0 80px rgba(232,168,56,0.05);
-    padding: 64px 72px 64px 90px;
-    min-height: 880px;
+    padding: 72px 80px 72px 96px; /* ~1" top/bottom, ~1" right, ~1.5" left margin */
+    min-height: 1056px; /* US Letter 11" at 96dpi */
     position: relative;
     border-radius: 2px;
     animation: pageIn 0.5s var(--transition-smooth);
+    cursor: text; /* entire page is clickable */
   }
 
   /* ══════════════════════════════════════
-     PAGE BREAKS
+     PAGE BREAKS (visual gap like Word/Docs)
      ══════════════════════════════════════ */
   .page-break {
     position: relative;
-    height: 56px;
-    margin: 8px -72px 8px -90px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    height: 48px;
+    margin: 0 -80px 0 -96px; /* extend to page edges */
     pointer-events: none;
     user-select: none;
+    background: var(--bg-primary);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.25) 0%, transparent 70%),
+      radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.25) 0%, transparent 70%);
   }
+  /* Bottom edge shadow of page above */
   .page-break::before {
     content: '';
     position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 0;
-    border-top: 2px dashed rgba(139,26,26,0.18);
+    top: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.15), transparent);
   }
-  .page-break-label {
-    position: relative;
-    background: var(--paper);
-    padding: 2px 14px;
+  /* Top edge shadow of page below */
+  .page-break::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 6px;
+    background: linear-gradient(0deg, rgba(0,0,0,0.15), transparent);
+  }
+
+  /* Page number footer (sits just above the page break) */
+  .page-footer {
+    text-align: center;
+    padding: 12px 0 4px;
+    margin: 0 -80px 0 -96px;
+    pointer-events: none;
+    user-select: none;
+  }
+  .page-footer-num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.6rem;
+    font-size: 0.62rem;
     font-weight: 500;
-    letter-spacing: 2px;
-    color: rgba(139,26,26,0.35);
-    text-transform: uppercase;
-    border: 1px solid rgba(139,26,26,0.12);
-    border-radius: 10px;
+    letter-spacing: 1px;
+    color: rgba(26,18,8,0.28);
   }
 
   /* Page counter in header */
@@ -1789,61 +1801,80 @@ function showToast(message) {
 }
 
 // ═══════════════════════════════════════
-// PAGE BREAKS
+// PAGE BREAKS (US Letter: 1056px height)
 // ═══════════════════════════════════════
-const PAGE_CONTENT_HEIGHT = 960; // px — approx 1 screenplay page
+const PAGE_TOTAL_HEIGHT = 1056; // 11" at 96dpi — US Letter
+const PAGE_PADDING_TOP = 72;
+const PAGE_PADDING_BOTTOM = 72;
+const PAGE_CONTENT_HEIGHT = PAGE_TOTAL_HEIGHT - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM; // 912px
+const PAGE_BREAK_HEIGHT = 48; // gap between pages
+const PAGE_FOOTER_HEIGHT = 28; // page number footer
 let pageBreakTimeout = null;
 
 function updatePageBreaks() {
   const page = document.getElementById('scriptPage');
   if (!page) return;
 
-  // Remove existing page breaks
-  page.querySelectorAll('.page-break').forEach(pb => pb.remove());
+  // Remove existing page breaks and footers
+  page.querySelectorAll('.page-break, .page-footer').forEach(el => el.remove());
 
-  // Get the top of content area (after page padding)
+  // Get the top of content area
   const pageRect = page.getBoundingClientRect();
-  const pageStyle = getComputedStyle(page);
-  const paddingTop = parseFloat(pageStyle.paddingTop);
-  const contentStartY = pageRect.top + paddingTop;
+  const contentStartY = pageRect.top + PAGE_PADDING_TOP;
 
-  // Get all child elements that are content (not page breaks)
+  // Get all content children (not page breaks/footers)
   const children = Array.from(page.children).filter(el =>
-    !el.classList.contains('page-break')
+    !el.classList.contains('page-break') && !el.classList.contains('page-footer')
   );
 
   if (children.length === 0) {
     updatePageCounter(1);
+    ensureMinPageHeight(1);
     return;
   }
 
-  // Calculate where page breaks should be inserted
+  // Calculate page breaks
   let pageNum = 1;
   let nextBreakY = contentStartY + PAGE_CONTENT_HEIGHT;
-  const insertions = []; // { beforeElement, pageNum }
+  const insertions = [];
 
   for (let i = 0; i < children.length; i++) {
     const child = children[i];
     const childRect = child.getBoundingClientRect();
     const childBottom = childRect.bottom;
 
-    // If this element's bottom exceeds the current page boundary
     while (childBottom > nextBreakY) {
       pageNum++;
       insertions.push({ before: child, pageNum });
-      nextBreakY += PAGE_CONTENT_HEIGHT + 56; // 56px = page break element height
+      nextBreakY += PAGE_CONTENT_HEIGHT + PAGE_BREAK_HEIGHT + PAGE_FOOTER_HEIGHT;
     }
   }
 
-  // Insert page break elements
+  // Insert page footer + page break elements
   insertions.forEach(ins => {
+    // Page footer (page number of the page above)
+    const footer = document.createElement('div');
+    footer.className = 'page-footer';
+    footer.innerHTML = '<span class="page-footer-num">' + (ins.pageNum - 1) + '</span>';
+    page.insertBefore(footer, ins.before);
+
+    // Page break gap
     const pb = document.createElement('div');
     pb.className = 'page-break';
-    pb.innerHTML = '<span class="page-break-label">Page ' + ins.pageNum + '</span>';
     page.insertBefore(pb, ins.before);
   });
 
   updatePageCounter(pageNum);
+  ensureMinPageHeight(pageNum);
+}
+
+function ensureMinPageHeight(pageCount) {
+  // Make the page tall enough so each page section fills to the bottom
+  const page = document.getElementById('scriptPage');
+  if (!page) return;
+  const totalHeight = (pageCount * PAGE_TOTAL_HEIGHT) +
+    ((pageCount - 1) * (PAGE_BREAK_HEIGHT + PAGE_FOOTER_HEIGHT));
+  page.style.minHeight = totalHeight + 'px';
 }
 
 function updatePageCounter(count) {
@@ -1857,6 +1888,47 @@ function debouncedPageBreaks() {
   clearTimeout(pageBreakTimeout);
   pageBreakTimeout = setTimeout(updatePageBreaks, 300);
 }
+
+// ═══════════════════════════════════════
+// CLICK-TO-TYPE (click empty page space)
+// ═══════════════════════════════════════
+document.getElementById('scriptPage').addEventListener('click', (e) => {
+  const page = document.getElementById('scriptPage');
+  const target = e.target;
+
+  // Only handle clicks directly on the script-page background
+  if (target !== page) return;
+
+  // Find the nearest block above the click point
+  const clickY = e.clientY;
+  const blocks = Array.from(page.querySelectorAll('.script-block'));
+  const refsSection = document.getElementById('referencesSection');
+
+  let insertBefore = refsSection; // default: insert at end
+
+  for (let i = 0; i < blocks.length; i++) {
+    const rect = blocks[i].getBoundingClientRect();
+    if (rect.top > clickY) {
+      insertBefore = blocks[i];
+      break;
+    }
+  }
+
+  // Create a new action block at the click position
+  const block = createBlockElement('action', '', null, false);
+  block.classList.add('new-block');
+  page.insertBefore(block, insertBefore);
+
+  const el = block.querySelector('[contenteditable="true"]');
+  el.focus();
+
+  setTimeout(() => {
+    block.classList.remove('new-block');
+  }, 350);
+
+  debouncedSave();
+  debouncedPageBreaks();
+});
 
 // ═══════════════════════════════════════
 // EVENT LISTENERS
