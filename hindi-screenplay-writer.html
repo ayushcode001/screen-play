@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Filmi Script — Hindi Screenplay Writer</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5EDD8;
+    --gold: #C9933A;
+    --deep-red: #8B1A1A;
+    --ink: #1A1208;
+    --paper: #FBF6EC;
+    --shadow: rgba(26,18,8,0.15);
+    --accent: #E8401C;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    font-family: 'Crimson Pro', serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background-image: 
+      radial-gradient(ellipse at 20% 50%, rgba(139,26,26,0.3) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,147,58,0.2) 0%, transparent 50%);
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--deep-red);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    position: sticky; top: 0; z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+  }
+  .logo span { color: var(--cream); font-size: 0.9rem; display: block; letter-spacing: 6px; margin-top: -4px; }
+
+  .header-btns { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 18px;
+    border: 2px solid var(--gold);
+    background: transparent;
+    color: var(--gold);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .btn:hover { background: var(--gold); color: var(--ink); }
+  .btn.primary { background: var(--gold); color: var(--ink); }
+  .btn.primary:hover { background: #daa840; }
+
+  /* ── MAIN LAYOUT ── */
+  .main { display: flex; height: calc(100vh - 67px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 260px;
+    background: rgba(26,18,8,0.95);
+    border-right: 1px solid rgba(201,147,58,0.3);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 20px 0;
+  }
+
+  .sidebar-section { margin-bottom: 24px; }
+  .sidebar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85rem;
+    color: var(--gold);
+    letter-spacing: 3px;
+    padding: 0 20px 8px;
+    border-bottom: 1px solid rgba(201,147,58,0.2);
+    margin-bottom: 10px;
+  }
+
+  .element-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 20px;
+    background: none;
+    border: none;
+    color: var(--cream);
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    border-left: 3px solid transparent;
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.95rem;
+  }
+  .element-btn:hover, .element-btn.active {
+    background: rgba(201,147,58,0.1);
+    border-left-color: var(--gold);
+    color: var(--gold);
+  }
+  .element-btn .kbd {
+    margin-left: auto;
+    font-size: 0.7rem;
+    background: rgba(201,147,58,0.2);
+    color: rgba(201,147,58,0.8);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+  }
+
+  .tip-box {
+    margin: 10px 16px;
+    padding: 12px;
+    background: rgba(201,147,58,0.08);
+    border: 1px solid rgba(201,147,58,0.2);
+    border-radius: 2px;
+    font-size: 0.82rem;
+    color: rgba(245,237,216,0.7);
+    line-height: 1.5;
+  }
+  .tip-box strong { color: var(--gold); display: block; margin-bottom: 4px; }
+
+  /* ── SCRIPT AREA ── */
+  .script-wrapper {
+    flex: 1;
+    overflow-y: auto;
+    padding: 40px 20px;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 31px,
+        rgba(201,147,58,0.04) 31px,
+        rgba(201,147,58,0.04) 32px
+      );
+  }
+
+  .script-page {
+    width: 680px;
+    max-width: 100%;
+    margin: 0 auto;
+    background: var(--paper);
+    box-shadow: 
+      0 0 0 1px rgba(201,147,58,0.3),
+      0 20px 60px rgba(0,0,0,0.6),
+      0 2px 0 rgba(201,147,58,0.4) inset;
+    padding: 72px 80px 72px 100px;
+    min-height: 880px;
+    position: relative;
+    animation: pageIn 0.4s ease;
+  }
+
+  @keyframes pageIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Red binding edge */
+  .script-page::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    background: linear-gradient(180deg, var(--deep-red), #5a1010);
+    box-shadow: 2px 0 8px rgba(0,0,0,0.3);
+  }
+
+  /* Page holes */
+  .script-page::after {
+    content: '';
+    position: absolute;
+    left: 22px; top: 0; bottom: 0;
+    width: 2px;
+    background: repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 70px,
+      rgba(139,26,26,0.3) 70px,
+      rgba(139,26,26,0.3) 90px
+    );
+  }
+
+  /* ── SCREENPLAY ELEMENTS ── */
+  .script-title-block {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid rgba(139,26,26,0.15);
+  }
+  .script-title-block h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--deep-red);
+    margin-bottom: 8px;
+  }
+  .script-title-block p {
+    font-style: italic;
+    color: rgba(26,18,8,0.5);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
+  .script-block {
+    margin-bottom: 16px;
+    position: relative;
+    cursor: text;
+  }
+  .script-block:last-child { margin-bottom: 0; }
+
+  /* SCENE HEADING */
+  .scene-heading {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    color: var(--ink);
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(26,18,8,0.1);
+    margin-bottom: 12px;
+  }
+  .scene-heading[contenteditable="true"]:empty:before {
+    content: 'INT./EXT. LOCATION — DAY/NIGHT';
+    color: rgba(139,26,26,0.35);
+    font-style: italic;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+  }
+
+  /* ACTION */
+  .action {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .action[contenteditable="true"]:empty:before {
+    content: 'Describe what we see and hear on screen...';
+    color: rgba(26,18,8,0.3);
+    font-style: italic;
+  }
+
+  /* CHARACTER */
+  .character {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    margin-left: 180px;
+    margin-bottom: 4px;
+    color: var(--deep-red);
+  }
+  .character[contenteditable="true"]:empty:before {
+    content: 'CHARACTER NAME';
+    color: rgba(139,26,26,0.35);
+    font-style: italic;
+    font-weight: 400;
+  }
+
+  /* DIALOGUE */
+  .dialogue {
+    font-family: 'Crimson Pro', serif;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-left: 100px;
+    margin-right: 100px;
+  }
+  .dialogue[contenteditable="true"]:empty:before {
+    content: 'What the character says...';
+    color: rgba(26,18,8,0.3);
+    font-style: italic;
+  }
+
+  /* PARENTHETICAL */
+  .parenthetical {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.9rem;
+    margin-left: 130px;
+    margin-right: 130px;
+    color: rgba(26,18,8,0.65);
+  }
+  .parenthetical[contenteditable="true"]:empty:before {
+    content: '(acting direction)';
+    color: rgba(26,18,8,0.25);
+  }
+
+  /* TRANSITION */
+  .transition {
+    font-family: 'Crimson Pro', serif;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+    text-align: right;
+    color: rgba(26,18,8,0.6);
+    margin: 16px 0;
+  }
+
+  /* SONG CUE */
+  .song-cue {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 0.95rem;
+    text-align: center;
+    color: var(--deep-red);
+    border-top: 1px solid rgba(139,26,26,0.2);
+    border-bottom: 1px solid rgba(139,26,26,0.2);
+    padding: 8px 20px;
+    margin: 16px 0;
+    background: rgba(139,26,26,0.04);
+  }
+
+  /* Element type label */
+  .element-label {
+    position: absolute;
+    left: -68px;
+    top: 4px;
+    font-size: 0.62rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    color: rgba(139,26,26,0.4);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  [contenteditable="true"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(201,147,58,0.3);
+    border-radius: 2px;
+  }
+
+  /* ── FORMAT GUIDE PANEL ── */
+  .guide-panel {
+    width: 280px;
+    background: rgba(26,18,8,0.92);
+    border-left: 1px solid rgba(201,147,58,0.3);
+    overflow-y: auto;
+    flex-shrink: 0;
+    padding: 20px;
+  }
+
+  .guide-panel h3 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    letter-spacing: 3px;
+    font-size: 1rem;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(201,147,58,0.2);
+  }
+
+  .format-card {
+    margin-bottom: 16px;
+    padding: 14px;
+    background: rgba(245,237,216,0.04);
+    border: 1px solid rgba(201,147,58,0.15);
+    border-radius: 2px;
+    transition: all 0.2s;
+  }
+  .format-card:hover { border-color: rgba(201,147,58,0.4); background: rgba(245,237,216,0.07); }
+  .format-card h4 {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--gold);
+    letter-spacing: 2px;
+    font-size: 0.85rem;
+    margin-bottom: 6px;
+  }
+  .format-card p {
+    font-size: 0.8rem;
+    color: rgba(245,237,216,0.65);
+    line-height: 1.5;
+    margin-bottom: 6px;
+  }
+  .format-card .example {
+    font-size: 0.75rem;
+    color: rgba(245,237,216,0.45);
+    font-style: italic;
+    border-left: 2px solid rgba(201,147,58,0.3);
+    padding-left: 8px;
+    margin-top: 6px;
+  }
+
+  /* ── HINDI FILM SPECIFIC TIPS ── */
+  .hindi-badge {
+    background: var(--deep-red);
+    color: var(--cream);
+    font-size: 0.65rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 2px;
+    padding: 2px 6px;
+    border-radius: 2px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ── TOOLBAR ── */
+  .toolbar {
+    background: rgba(26,18,8,0.98);
+    border-bottom: 1px solid rgba(201,147,58,0.2);
+    padding: 8px 20px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .toolbar-label {
+    font-family: 'Bebas Neue', sans-serif;
+    color: rgba(201,147,58,0.6);
+    letter-spacing: 2px;
+    font-size: 0.75rem;
+    margin-right: 4px;
+  }
+  .tool-btn {
+    padding: 5px 12px;
+    background: rgba(201,147,58,0.1);
+    border: 1px solid rgba(201,147,58,0.25);
+    color: var(--cream);
+    font-family: 'Crimson Pro', serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s;
+  }
+  .tool-btn:hover { background: rgba(201,147,58,0.25); border-color: var(--gold); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: rgba(26,18,8,0.5); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,147,58,0.3); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(201,147,58,0.6); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    Filmi Script
+    <span>HINDI SCREENPLAY WRITER</span>
+  </div>
+  <div class="header-btns">
+    <button class="btn" onclick="clearScript()">Clear</button>
+    <button class="btn primary" onclick="downloadScript()">Download Script</button>
+  </div>
+</header>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <span class="toolbar-label">Insert:</span>
+  <button class="tool-btn" onclick="addElement('scene-heading')">🎬 Scene Heading</button>
+  <button class="tool-btn" onclick="addElement('action')">📝 Action</button>
+  <button class="tool-btn" onclick="addElement('character')">🎭 Character</button>
+  <button class="tool-btn" onclick="addElement('dialogue')">💬 Dialogue</button>
+  <button class="tool-btn" onclick="addElement('parenthetical')">( ) Parenthetical</button>
+  <button class="tool-btn" onclick="addElement('transition')">⟶ Transition</button>
+  <button class="tool-btn" onclick="addElement('song-cue')">🎵 Song Cue</button>
+</div>
+
+<div class="main">
+
+  <!-- Left Sidebar: Element Guide -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-title">Elements</div>
+
+      <button class="element-btn" onclick="addElement('scene-heading')">
+        <span>🎬</span>
+        <span>Scene Heading</span>
+        <span class="kbd">S</span>
+      </button>
+      <button class="element-btn" onclick="addElement('action')">
+        <span>📝</span>
+        <span>Action Line</span>
+        <span class="kbd">A</span>
+      </button>
+      <button class="element-btn" onclick="addElement('character')">
+        <span>🎭</span>
+        <span>Character</span>
+        <span class="kbd">C</span>
+      </button>
+      <button class="element-btn" onclick="addElement('dialogue')">
+        <span>💬</span>
+        <span>Dialogue</span>
+        <span class="kbd">D</span>
+      </button>
+      <button class="element-btn" onclick="addElement('parenthetical')">
+        <span>( )</span>
+        <span>Parenthetical</span>
+        <span class="kbd">P</span>
+      </button>
+      <button class="element-btn" onclick="addElement('transition')">
+        <span>⟶</span>
+        <span>Transition</span>
+        <span class="kbd">T</span>
+      </button>
+      <button class="element-btn" onclick="addElement('song-cue')">
+        <span>🎵</span>
+        <span>Song Cue</span>
+        <span class="kbd">G</span>
+      </button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Quick Tips</div>
+      <div class="tip-box">
+        <strong>Scene Heading</strong>
+        Always starts with INT. (indoors) or EXT. (outdoors), then location, then time.
+      </div>
+      <div class="tip-box">
+        <strong>Dialogue Flow</strong>
+        Character name → Parenthetical (optional) → Dialogue. Always in this order!
+      </div>
+      <div class="tip-box">
+        <strong>Hindi Film Tip 🎵</strong>
+        Use the Song Cue element before a song sequence. Write the song name in CAPS.
+      </div>
+    </div>
+  </aside>
+
+  <!-- Script Page -->
+  <div class="script-wrapper" id="scriptWrapper">
+    <div class="script-page" id="scriptPage">
+
+      <div class="script-title-block">
+        <h1 contenteditable="true" id="movieTitle">APNA TITLE LIKHO</h1>
+        <p contenteditable="true" id="movieSubtitle">Written by / लिखा गया</p>
+      </div>
+
+      <!-- Sample content to demonstrate format -->
+      <div class="script-block">
+        <span class="element-label">SCENE</span>
+        <div class="scene-heading" contenteditable="true">INT. MUMBAI FLAT - MORNING</div>
+      </div>
+
+      <div class="script-block">
+        <span class="element-label">ACTION</span>
+        <div class="action" contenteditable="true">A small, cluttered flat. Clothes everywhere. RAHUL (25, charming but broke) wakes up to the sound of his landlord pounding on the door.</div>
+      </div>
+
+      <div class="script-block">
+        <span class="element-label">CHARACTER</span>
+        <div class="character" contenteditable="true">LANDLORD (O.S.)</div>
+      </div>
+      <div class="script-block">
+        <span class="element-label">PARENTHETICAL</span>
+        <div class="parenthetical" contenteditable="true">(shouting, angry)</div>
+      </div>
+      <div class="script-block">
+        <span class="element-label">DIALOGUE</span>
+        <div class="dialogue" contenteditable="true">Rahul bhai! Teen mahine ho gaye! Kiraya kab doge?!</div>
+      </div>
+
+      <div class="script-block">
+        <span class="element-label">CHARACTER</span>
+        <div class="character" contenteditable="true">RAHUL</div>
+      </div>
+      <div class="script-block">
+        <span class="element-label">PARENTHETICAL</span>
+        <div class="parenthetical" contenteditable="true">(groaning, to himself)</div>
+      </div>
+      <div class="script-block">
+        <span class="element-label">DIALOGUE</span>
+        <div class="dialogue" contenteditable="true">Aaj toh pakka... kal se.</div>
+      </div>
+
+      <div class="script-block">
+        <span class="element-label">ACTION</span>
+        <div class="action" contenteditable="true">He pulls the blanket over his head. His phone buzzes. A message from an unknown number: "I need a miracle. You're it."</div>
+      </div>
+
+      <div class="script-block">
+        <span class="element-label">TRANSITION</span>
+        <div class="transition" contenteditable="true">CUT TO:</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Right Panel: Format Guide -->
+  <aside class="guide-panel">
+    <h3>Format Guide</h3>
+
+    <div class="format-card">
+      <h4>🎬 Scene Heading <span class="hindi-badge">INT/EXT</span></h4>
+      <p>Also called a "slug line". Tells us WHERE and WHEN a scene takes place. Always in UPPERCASE.</p>
+      <div class="example">INT. DELHI MARKET — DAY<br>EXT. MUMBAI BEACH — NIGHT<br>INT. TRAIN COMPARTMENT — DUSK</div>
+    </div>
+
+    <div class="format-card">
+      <h4>📝 Action Line</h4>
+      <p>Describe only what the camera SEES and EARS can HEAR. Write in present tense. No inner thoughts!</p>
+      <div class="example">❌ Priya thinks about him.<br>✅ Priya stares at his photo, eyes filling with tears.</div>
+    </div>
+
+    <div class="format-card">
+      <h4>🎭 Character Cue</h4>
+      <p>Name in ALL CAPS, centered. Add (V.O.) for voice-over narration, (O.S.) if character is off-screen.</p>
+      <div class="example">VIKRAM<br>PRIYA (V.O.)<br>SHARMA JI (O.S.)</div>
+    </div>
+
+    <div class="format-card">
+      <h4>💬 Dialogue</h4>
+      <p>Centered block below the character name. Can mix Hindi &amp; English (Hinglish) naturally!</p>
+      <div class="example">"Ek baar jo maine commitment kar li... toh phir main apne aap ki bhi nahi sunta."</div>
+    </div>
+
+    <div class="format-card">
+      <h4>( ) Parenthetical</h4>
+      <p>Acting direction in brackets, placed between character name and dialogue. Use sparingly!</p>
+      <div class="example">(crying)<br>(whispering, afraid)<br>(looking away)</div>
+    </div>
+
+    <div class="format-card">
+      <h4>⟶ Transition</h4>
+      <p>Used to indicate how we move from one scene to the next. Right-aligned, in caps.</p>
+      <div class="example">CUT TO:<br>DISSOLVE TO:<br>FADE TO BLACK.<br>SMASH CUT TO:</div>
+    </div>
+
+    <div class="format-card">
+      <h4>🎵 Song Cue <span class="hindi-badge">HINDI FILM</span></h4>
+      <p>Unique to Hindi films! Marks where a song-and-dance sequence begins. Write song name in caps.</p>
+      <div class="example">SONG: "DIL DHADAKNE DO"<br>— A dream sequence begins. The world turns golden —</div>
+    </div>
+
+    <div class="format-card">
+      <h4>💡 Golden Rules</h4>
+      <p>• 1 page ≈ 1 minute of screen time<br>• Introduce characters in CAPS on first appearance<br>• Write for the audience's eyes, not the reader's imagination<br>• Hindi films average 150–170 pages (2.5–3 hrs)</p>
+    </div>
+  </aside>
+
+</div>
+
+<script>
+// ── Add Element ──
+function addElement(type) {
+  const page = document.getElementById('scriptPage');
+  const block = document.createElement('div');
+  block.className = 'script-block';
+
+  const label = document.createElement('span');
+  label.className = 'element-label';
+
+  const el = document.createElement('div');
+  el.className = type;
+  el.contentEditable = 'true';
+
+  const labelMap = {
+    'scene-heading': 'SCENE',
+    'action': 'ACTION',
+    'character': 'CHARACTER',
+    'dialogue': 'DIALOGUE',
+    'parenthetical': 'PARENTH.',
+    'transition': 'TRANSITION',
+    'song-cue': 'SONG'
+  };
+
+  label.textContent = labelMap[type] || type.toUpperCase();
+  block.appendChild(label);
+  block.appendChild(el);
+  page.appendChild(block);
+
+  el.focus();
+
+  // Scroll to new element
+  setTimeout(() => {
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+// ── Keyboard Shortcuts ──
+document.addEventListener('keydown', (e) => {
+  if (!e.altKey) return;
+  const map = {
+    's': 'scene-heading',
+    'a': 'action',
+    'c': 'character',
+    'd': 'dialogue',
+    'p': 'parenthetical',
+    't': 'transition',
+    'g': 'song-cue'
+  };
+  const key = e.key.toLowerCase();
+  if (map[key]) {
+    e.preventDefault();
+    addElement(map[key]);
+  }
+});
+
+// ── Clear Script ──
+function clearScript() {
+  if (!confirm('Clear the entire script? This cannot be undone.')) return;
+  const page = document.getElementById('scriptPage');
+  // Keep title block
+  const titleBlock = page.querySelector('.script-title-block');
+  page.innerHTML = '';
+  page.appendChild(titleBlock);
+  document.getElementById('movieTitle').textContent = 'APNA TITLE LIKHO';
+  document.getElementById('movieSubtitle').textContent = 'Written by / लिखा गया';
+}
+
+// ── Download as Text ──
+function downloadScript() {
+  const title = document.getElementById('movieTitle').textContent.trim();
+  const subtitle = document.getElementById('movieSubtitle').textContent.trim();
+
+  let text = title + '\n' + subtitle + '\n\n';
+  text += '='.repeat(60) + '\n\n';
+
+  const blocks = document.querySelectorAll('.script-block');
+  blocks.forEach(block => {
+    const el = block.querySelector('[class]');
+    if (!el || el.classList.contains('element-label')) return;
+    const className = el.className.replace(/\s*script-block\s*/g, '').trim();
+    const content = el.textContent.trim();
+    if (!content) return;
+
+    if (className === 'scene-heading') {
+      text += '\n' + content.toUpperCase() + '\n\n';
+    } else if (className === 'action') {
+      text += content + '\n\n';
+    } else if (className === 'character') {
+      text += '                    ' + content.toUpperCase() + '\n';
+    } else if (className === 'parenthetical') {
+      text += '               (' + content.replace(/[()]/g, '') + ')\n';
+    } else if (className === 'dialogue') {
+      text += '          ' + content + '\n\n';
+    } else if (className === 'transition') {
+      text += '                                        ' + content.toUpperCase() + '\n\n';
+    } else if (className === 'song-cue') {
+      text += '\n--- ' + content + ' ---\n\n';
+    }
+  });
+
+  const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = (title || 'my-script').toLowerCase().replace(/\s+/g, '-') + '.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+</script>
+
+</body>
+</html>
