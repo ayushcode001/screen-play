@@ -375,6 +375,62 @@
     animation: pageIn 0.5s var(--transition-smooth);
   }
 
+  /* ══════════════════════════════════════
+     PAGE BREAKS
+     ══════════════════════════════════════ */
+  .page-break {
+    position: relative;
+    height: 56px;
+    margin: 8px -72px 8px -90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    user-select: none;
+  }
+  .page-break::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 0;
+    border-top: 2px dashed rgba(139,26,26,0.18);
+  }
+  .page-break-label {
+    position: relative;
+    background: var(--paper);
+    padding: 2px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 2px;
+    color: rgba(139,26,26,0.35);
+    text-transform: uppercase;
+    border: 1px solid rgba(139,26,26,0.12);
+    border-radius: 10px;
+  }
+
+  /* Page counter in header */
+  .page-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    padding: 4px 12px;
+    background: rgba(232,168,56,0.06);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .page-counter .pc-num {
+    color: var(--accent-amber);
+    font-weight: 500;
+  }
+
   @keyframes pageIn {
     from { opacity: 0; transform: translateY(16px) scale(0.99); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -909,6 +965,9 @@
     </div>
   </div>
   <div class="header-actions">
+    <div class="page-counter" id="pageCounter" title="Estimated pages (1 page ≈ 1 min screen time)">
+      📄 <span class="pc-num" id="pageCountNum">1</span> <span>pg</span>
+    </div>
     <div class="save-indicator" id="saveIndicator">
       <span class="save-dot"></span>
       <span>Saved</span>
@@ -1312,6 +1371,7 @@ function addElement(type) {
   }, 350);
 
   debouncedSave();
+  debouncedPageBreaks();
 }
 
 // ═══════════════════════════════════════
@@ -1729,12 +1789,88 @@ function showToast(message) {
 }
 
 // ═══════════════════════════════════════
+// PAGE BREAKS
+// ═══════════════════════════════════════
+const PAGE_CONTENT_HEIGHT = 960; // px — approx 1 screenplay page
+let pageBreakTimeout = null;
+
+function updatePageBreaks() {
+  const page = document.getElementById('scriptPage');
+  if (!page) return;
+
+  // Remove existing page breaks
+  page.querySelectorAll('.page-break').forEach(pb => pb.remove());
+
+  // Get the top of content area (after page padding)
+  const pageRect = page.getBoundingClientRect();
+  const pageStyle = getComputedStyle(page);
+  const paddingTop = parseFloat(pageStyle.paddingTop);
+  const contentStartY = pageRect.top + paddingTop;
+
+  // Get all child elements that are content (not page breaks)
+  const children = Array.from(page.children).filter(el =>
+    !el.classList.contains('page-break')
+  );
+
+  if (children.length === 0) {
+    updatePageCounter(1);
+    return;
+  }
+
+  // Calculate where page breaks should be inserted
+  let pageNum = 1;
+  let nextBreakY = contentStartY + PAGE_CONTENT_HEIGHT;
+  const insertions = []; // { beforeElement, pageNum }
+
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i];
+    const childRect = child.getBoundingClientRect();
+    const childBottom = childRect.bottom;
+
+    // If this element's bottom exceeds the current page boundary
+    while (childBottom > nextBreakY) {
+      pageNum++;
+      insertions.push({ before: child, pageNum });
+      nextBreakY += PAGE_CONTENT_HEIGHT + 56; // 56px = page break element height
+    }
+  }
+
+  // Insert page break elements
+  insertions.forEach(ins => {
+    const pb = document.createElement('div');
+    pb.className = 'page-break';
+    pb.innerHTML = '<span class="page-break-label">Page ' + ins.pageNum + '</span>';
+    page.insertBefore(pb, ins.before);
+  });
+
+  updatePageCounter(pageNum);
+}
+
+function updatePageCounter(count) {
+  const numEl = document.getElementById('pageCountNum');
+  if (numEl) {
+    numEl.textContent = count;
+  }
+}
+
+function debouncedPageBreaks() {
+  clearTimeout(pageBreakTimeout);
+  pageBreakTimeout = setTimeout(updatePageBreaks, 300);
+}
+
+// ═══════════════════════════════════════
 // EVENT LISTENERS
 // ═══════════════════════════════════════
-// Auto-save on any input in the script page
-document.getElementById('scriptPage').addEventListener('input', debouncedSave);
+// Auto-save and page breaks on any input in the script page
+document.getElementById('scriptPage').addEventListener('input', () => {
+  debouncedSave();
+  debouncedPageBreaks();
+});
 document.getElementById('movieTitle').addEventListener('input', debouncedSave);
 document.getElementById('movieSubtitle').addEventListener('input', debouncedSave);
+
+// Recalculate page breaks on window resize
+window.addEventListener('resize', debouncedPageBreaks);
 
 // Close citation modal on overlay click
 document.getElementById('citationModal').addEventListener('click', (e) => {
@@ -1755,6 +1891,8 @@ document.addEventListener('keydown', (e) => {
 // ═══════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   restoreState();
+  // Initial page break calculation after a short delay for rendering
+  setTimeout(updatePageBreaks, 200);
 });
 </script>
 
