@@ -333,7 +333,7 @@
   }
   .dialogue {
     font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.6;
-    margin-left: 100px; margin-right: 100px;
+    margin-left: 100px; margin-right: 100px; color: #1a3a5c;
   }
   .dialogue[contenteditable="true"]:empty:before {
     content: 'What the character says...'; color: rgba(26,18,8,0.25); font-style: italic;
@@ -364,6 +364,29 @@
   mark.hl-green  { background: rgba(76,175,80,0.3); border-radius: 2px; padding: 0 1px; }
   mark.hl-blue   { background: rgba(66,165,245,0.3); border-radius: 2px; padding: 0 1px; }
   mark.hl-pink   { background: rgba(236,64,122,0.3); border-radius: 2px; padding: 0 1px; }
+
+  /* Text color buttons */
+  .tc-btn {
+    width: 20px; height: 20px; border-radius: 4px; border: 2px solid rgba(255,255,255,0.15);
+    cursor: pointer; transition: var(--transition-fast); position: relative;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; font-weight: 700; color: #fff;
+  }
+  .tc-btn:hover { transform: scale(1.15); border-color: rgba(255,255,255,0.5); }
+  .tc-btn.tc-red    { background: #c62828; }
+  .tc-btn.tc-blue   { background: #1565c0; }
+  .tc-btn.tc-green  { background: #2e7d32; }
+  .tc-btn.tc-purple { background: #6a1b9a; }
+  .tc-btn.tc-orange { background: #e65100; }
+  .tc-btn.tc-reset  {
+    background: transparent; border: 1px solid rgba(255,255,255,0.3);
+    font-size: 0.55rem; color: var(--text-secondary); width: auto; padding: 2px 6px;
+    border-radius: var(--radius-sm);
+  }
+  .float-section-label {
+    font-family: 'JetBrains Mono', monospace; font-size: 0.5rem; color: var(--text-muted);
+    letter-spacing: 1px; text-transform: uppercase; padding: 0 2px;
+  }
 
   sup.citation-ref {
     font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600;
@@ -615,11 +638,20 @@
 
 <!-- Floating toolbar -->
 <div class="float-toolbar" id="floatToolbar">
-  <button class="hl-btn hl-yellow-btn" title="Yellow" onclick="applyHighlight('yellow')"></button>
-  <button class="hl-btn hl-green-btn" title="Green" onclick="applyHighlight('green')"></button>
-  <button class="hl-btn hl-blue-btn" title="Blue" onclick="applyHighlight('blue')"></button>
-  <button class="hl-btn hl-pink-btn" title="Pink" onclick="applyHighlight('pink')"></button>
-  <button class="hl-btn hl-clear-btn" title="Remove" onclick="clearHighlight()">✕</button>
+  <span class="float-section-label">BG</span>
+  <button class="hl-btn hl-yellow-btn" title="Highlight Yellow" onclick="applyHighlight('yellow')"></button>
+  <button class="hl-btn hl-green-btn" title="Highlight Green" onclick="applyHighlight('green')"></button>
+  <button class="hl-btn hl-blue-btn" title="Highlight Blue" onclick="applyHighlight('blue')"></button>
+  <button class="hl-btn hl-pink-btn" title="Highlight Pink" onclick="applyHighlight('pink')"></button>
+  <button class="hl-btn hl-clear-btn" title="Remove Highlight" onclick="clearHighlight()">✕</button>
+  <div class="float-divider"></div>
+  <span class="float-section-label">A</span>
+  <button class="tc-btn tc-red" title="Red text" onclick="applyTextColor('#c62828')">A</button>
+  <button class="tc-btn tc-blue" title="Blue text" onclick="applyTextColor('#1565c0')">A</button>
+  <button class="tc-btn tc-green" title="Green text" onclick="applyTextColor('#2e7d32')">A</button>
+  <button class="tc-btn tc-purple" title="Purple text" onclick="applyTextColor('#6a1b9a')">A</button>
+  <button class="tc-btn tc-orange" title="Orange text" onclick="applyTextColor('#e65100')">A</button>
+  <button class="tc-btn tc-reset" title="Reset color" onclick="resetTextColor()">Reset</button>
   <div class="float-divider"></div>
   <button class="cite-btn" onclick="openCitationModal()">📌 Cite</button>
 </div>
@@ -1187,6 +1219,30 @@ function clearHighlight() {
     parent.querySelectorAll('mark').forEach(m => { if (range.intersectsNode(m)) { m.replaceWith(document.createTextNode(m.textContent)); } });
   }
   if (parent.tagName === 'MARK') parent.replaceWith(document.createTextNode(parent.textContent));
+  sel.removeAllRanges(); floatToolbar.classList.remove('visible'); debouncedSave();
+}
+
+function applyTextColor(color) {
+  const sel = window.getSelection(); if (!sel || sel.rangeCount === 0) return;
+  const range = sel.getRangeAt(0); if (range.collapsed) return;
+  const span = document.createElement('span');
+  span.style.color = color;
+  try { range.surroundContents(span); } catch(e) {
+    const frag = range.extractContents(); span.appendChild(frag); range.insertNode(span);
+  }
+  sel.removeAllRanges(); floatToolbar.classList.remove('visible'); debouncedSave();
+}
+
+function resetTextColor() {
+  const sel = window.getSelection(); if (!sel || sel.rangeCount === 0) return;
+  const range = sel.getRangeAt(0);
+  const parent = range.commonAncestorContainer.nodeType === 3 ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer;
+  if (parent.querySelectorAll) {
+    parent.querySelectorAll('span[style*="color"]').forEach(s => {
+      if (range.intersectsNode(s)) { s.replaceWith(document.createTextNode(s.textContent)); }
+    });
+  }
+  if (parent.tagName === 'SPAN' && parent.style.color) parent.replaceWith(document.createTextNode(parent.textContent));
   sel.removeAllRanges(); floatToolbar.classList.remove('visible'); debouncedSave();
 }
 
