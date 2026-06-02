@@ -7,49 +7,32 @@
 <meta name="description" content="A modern Hindi screenplay writing tool with auto-save, text highlighting, bookmarking, and citation features. Write professional Bollywood scripts online.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 <style>
-  /* ══════════════════════════════════════
-     DESIGN TOKENS
-     ══════════════════════════════════════ */
   :root {
     --bg-primary: #0a0a12;
     --bg-secondary: #12121e;
     --bg-elevated: #1a1a2e;
     --bg-glass: rgba(22, 22, 40, 0.72);
-    --bg-glass-hover: rgba(30, 30, 55, 0.85);
-
     --accent-amber: #e8a838;
     --accent-rose: #d4637a;
     --accent-gradient: linear-gradient(135deg, #e8a838 0%, #d4637a 100%);
     --accent-glow: rgba(232, 168, 56, 0.25);
-
     --text-primary: #f0ece4;
     --text-secondary: rgba(240, 236, 228, 0.65);
     --text-muted: rgba(240, 236, 228, 0.4);
-
     --border-subtle: rgba(232, 168, 56, 0.12);
     --border-accent: rgba(232, 168, 56, 0.3);
-
     --paper: #faf6ee;
     --paper-ink: #1a1208;
     --deep-red: #8B1A1A;
-
-    --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-
+    --radius-sm: 6px; --radius-md: 10px; --radius-lg: 16px;
     --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
     --shadow-md: 0 8px 32px rgba(0,0,0,0.4);
     --shadow-lg: 0 20px 60px rgba(0,0,0,0.6);
     --shadow-glow: 0 0 20px rgba(232,168,56,0.15);
-
     --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
     --transition-normal: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-smooth: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  /* ══════════════════════════════════════
-     RESET & BASE
-     ══════════════════════════════════════ */
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
@@ -59,911 +42,427 @@
     min-height: 100vh;
     overflow: hidden;
     background-image:
-      radial-gradient(ellipse at 15% 50%, rgba(212, 99, 122, 0.08) 0%, transparent 60%),
-      radial-gradient(ellipse at 85% 15%, rgba(232, 168, 56, 0.06) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, rgba(100, 80, 200, 0.04) 0%, transparent 40%);
+      radial-gradient(ellipse at 15% 50%, rgba(212,99,122,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at 85% 15%, rgba(232,168,56,0.06) 0%, transparent 50%);
   }
 
-  /* ══════════════════════════════════════
-     SCROLLBAR
-     ══════════════════════════════════════ */
   ::-webkit-scrollbar { width: 5px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: rgba(232,168,56,0.2); border-radius: 10px; }
   ::-webkit-scrollbar-thumb:hover { background: rgba(232,168,56,0.4); }
 
-  /* ══════════════════════════════════════
-     HEADER
-     ══════════════════════════════════════ */
+  /* ── HEADER ── */
   header {
     background: var(--bg-glass);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     padding: 14px 28px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     border-bottom: 1px solid var(--border-subtle);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    position: sticky; top: 0; z-index: 100;
   }
-
   .logo-area { display: flex; align-items: center; gap: 14px; }
-
   .logo-icon {
     width: 38px; height: 38px;
     background: var(--accent-gradient);
     border-radius: var(--radius-sm);
     display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-    box-shadow: var(--shadow-glow);
+    font-size: 1.2rem; box-shadow: var(--shadow-glow);
   }
-
   .logo-text h1 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 700;
-    font-size: 1.15rem;
-    letter-spacing: 0.5px;
-    background: var(--accent-gradient);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.15rem;
+    background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-  .logo-text span {
-    font-size: 0.68rem;
-    font-weight: 400;
-    color: var(--text-muted);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-  }
+  .logo-text span { font-size: 0.68rem; font-weight: 400; color: var(--text-muted); letter-spacing: 3px; text-transform: uppercase; }
 
   .header-actions { display: flex; align-items: center; gap: 10px; }
-
   .save-indicator {
+    display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-muted);
+    transition: var(--transition-normal); opacity: 0; transform: translateY(-4px);
+  }
+  .save-indicator.show { opacity: 1; transform: translateY(0); }
+  .save-indicator.show .save-dot { background: #4ade80; box-shadow: 0 0 8px rgba(74,222,128,0.4); }
+  .save-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); transition: var(--transition-normal); }
+
+  .page-counter {
     display: flex; align-items: center; gap: 6px;
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    transition: var(--transition-normal);
-    opacity: 0;
-    transform: translateY(-4px);
+    font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--text-muted);
+    padding: 4px 12px; background: rgba(232,168,56,0.06);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+    letter-spacing: 0.5px; white-space: nowrap;
   }
-  .save-indicator.show {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .save-indicator.show .save-dot {
-    background: #4ade80;
-    box-shadow: 0 0 8px rgba(74,222,128,0.4);
-  }
-  .save-dot {
-    width: 7px; height: 7px;
-    border-radius: 50%;
-    background: var(--text-muted);
-    transition: var(--transition-normal);
-  }
+  .page-counter .pc-num { color: var(--accent-amber); font-weight: 500; }
 
   .btn {
-    padding: 8px 18px;
-    border: 1px solid var(--border-accent);
-    background: transparent;
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    letter-spacing: 0.3px;
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
-    position: relative;
-    overflow: hidden;
+    padding: 8px 18px; border: 1px solid var(--border-accent); background: transparent;
+    color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.8rem;
+    font-weight: 500; cursor: pointer; border-radius: var(--radius-sm); transition: var(--transition-fast);
+    position: relative; overflow: hidden;
   }
-  .btn::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--accent-gradient);
-    opacity: 0;
-    transition: var(--transition-fast);
-  }
+  .btn::after { content: ''; position: absolute; inset: 0; background: var(--accent-gradient); opacity: 0; transition: var(--transition-fast); }
   .btn:hover { border-color: var(--accent-amber); }
   .btn:hover::after { opacity: 0.1; }
-
-  .btn.primary {
-    background: var(--accent-gradient);
-    border: none;
-    color: #0a0a12;
-    font-weight: 600;
-  }
+  .btn.primary { background: var(--accent-gradient); border: none; color: #0a0a12; font-weight: 600; }
   .btn.primary:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: var(--shadow-glow); }
   .btn.primary::after { display: none; }
 
-  /* ══════════════════════════════════════
-     TOOLBAR
-     ══════════════════════════════════════ */
+  /* ── TOOLBAR ── */
   .toolbar {
-    background: var(--bg-secondary);
-    border-bottom: 1px solid var(--border-subtle);
-    padding: 8px 20px;
-    display: flex;
-    gap: 6px;
-    align-items: center;
-    flex-wrap: wrap;
+    background: var(--bg-secondary); border-bottom: 1px solid var(--border-subtle);
+    padding: 8px 20px; display: flex; gap: 6px; align-items: center; flex-wrap: wrap;
   }
-
   .toolbar-label {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text-muted);
-    font-size: 0.65rem;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-right: 8px;
+    font-family: 'JetBrains Mono', monospace; color: var(--text-muted);
+    font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; margin-right: 8px;
   }
-
   .tool-btn {
-    padding: 6px 14px;
-    background: rgba(232,168,56,0.06);
-    border: 1px solid var(--border-subtle);
-    color: var(--text-secondary);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.78rem;
-    cursor: pointer;
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
-    white-space: nowrap;
+    padding: 6px 14px; background: rgba(232,168,56,0.06); border: 1px solid var(--border-subtle);
+    color: var(--text-secondary); font-family: 'Inter', sans-serif; font-size: 0.78rem;
+    cursor: pointer; border-radius: var(--radius-sm); transition: var(--transition-fast); white-space: nowrap;
   }
-  .tool-btn:hover {
-    background: rgba(232,168,56,0.12);
-    border-color: var(--border-accent);
-    color: var(--text-primary);
-    transform: translateY(-1px);
-  }
-  .tool-btn:active { transform: translateY(0); }
+  .tool-btn:hover { background: rgba(232,168,56,0.12); border-color: var(--border-accent); color: var(--text-primary); transform: translateY(-1px); }
 
-  /* ══════════════════════════════════════
-     MAIN LAYOUT
-     ══════════════════════════════════════ */
-  .main {
-    display: flex;
-    height: calc(100vh - 103px);
-  }
+  /* ── MAIN LAYOUT ── */
+  .main { display: flex; height: calc(100vh - 103px); }
 
-  /* ══════════════════════════════════════
-     SIDEBAR
-     ══════════════════════════════════════ */
+  /* ── SIDEBAR ── */
   .sidebar {
-    width: 250px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-right: 1px solid var(--border-subtle);
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 16px 0;
+    width: 250px; background: var(--bg-glass); backdrop-filter: blur(16px);
+    border-right: 1px solid var(--border-subtle); overflow-y: auto; flex-shrink: 0; padding: 16px 0;
   }
-
   .sidebar-section { margin-bottom: 20px; }
-
   .sidebar-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.65rem;
-    font-weight: 500;
-    color: var(--accent-amber);
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    padding: 0 18px 10px;
-    border-bottom: 1px solid var(--border-subtle);
-    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 500;
+    color: var(--accent-amber); letter-spacing: 3px; text-transform: uppercase;
+    padding: 0 18px 10px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 6px;
   }
-
   .element-btn {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    padding: 9px 18px;
-    background: none;
-    border: none;
-    color: var(--text-secondary);
-    cursor: pointer;
-    text-align: left;
-    transition: var(--transition-fast);
-    border-left: 2px solid transparent;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.82rem;
+    display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 18px;
+    background: none; border: none; color: var(--text-secondary); cursor: pointer; text-align: left;
+    transition: var(--transition-fast); border-left: 2px solid transparent;
+    font-family: 'Inter', sans-serif; font-size: 0.82rem;
   }
-  .element-btn:hover, .element-btn.active {
-    background: rgba(232,168,56,0.06);
-    border-left-color: var(--accent-amber);
-    color: var(--text-primary);
-  }
+  .element-btn:hover { background: rgba(232,168,56,0.06); border-left-color: var(--accent-amber); color: var(--text-primary); }
   .element-btn .kbd {
-    margin-left: auto;
-    font-size: 0.62rem;
-    font-family: 'JetBrains Mono', monospace;
-    background: rgba(232,168,56,0.1);
-    color: rgba(232,168,56,0.6);
-    padding: 2px 6px;
-    border-radius: 3px;
-    border: 1px solid rgba(232,168,56,0.15);
+    margin-left: auto; font-size: 0.62rem; font-family: 'JetBrains Mono', monospace;
+    background: rgba(232,168,56,0.1); color: rgba(232,168,56,0.6);
+    padding: 2px 6px; border-radius: 3px; border: 1px solid rgba(232,168,56,0.15);
   }
-
   .tip-box {
-    margin: 6px 14px;
-    padding: 10px 12px;
-    background: rgba(232,168,56,0.04);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    line-height: 1.55;
+    margin: 6px 14px; padding: 10px 12px; background: rgba(232,168,56,0.04);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+    font-size: 0.75rem; color: var(--text-muted); line-height: 1.55;
   }
-  .tip-box strong {
-    color: var(--accent-amber);
-    display: block;
-    margin-bottom: 3px;
-    font-size: 0.72rem;
-    letter-spacing: 0.3px;
-  }
-
-  /* Bookmarks in sidebar */
+  .tip-box strong { color: var(--accent-amber); display: block; margin-bottom: 3px; font-size: 0.72rem; }
   .bookmark-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 7px 18px;
-    cursor: pointer;
-    color: var(--text-secondary);
-    font-size: 0.78rem;
-    transition: var(--transition-fast);
+    display: flex; align-items: center; gap: 8px; padding: 7px 18px; cursor: pointer;
+    color: var(--text-secondary); font-size: 0.78rem; transition: var(--transition-fast);
     border-left: 2px solid transparent;
   }
-  .bookmark-item:hover {
-    background: rgba(232,168,56,0.06);
-    border-left-color: var(--accent-amber);
-    color: var(--text-primary);
-  }
+  .bookmark-item:hover { background: rgba(232,168,56,0.06); border-left-color: var(--accent-amber); color: var(--text-primary); }
   .bookmark-item .bm-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .bookmark-item .bm-remove {
-    opacity: 0;
-    color: var(--accent-rose);
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: var(--transition-fast);
-    background: none;
-    border: none;
-    padding: 0 2px;
+    opacity: 0; color: var(--accent-rose); cursor: pointer; font-size: 0.9rem;
+    transition: var(--transition-fast); background: none; border: none; padding: 0 2px;
   }
   .bookmark-item:hover .bm-remove { opacity: 1; }
-  .no-bookmarks {
-    padding: 8px 18px;
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    font-style: italic;
-  }
+  .no-bookmarks { padding: 8px 18px; font-size: 0.72rem; color: var(--text-muted); font-style: italic; }
 
   /* ══════════════════════════════════════
-     SCRIPT AREA
+     MULTI-PAGE SYSTEM
      ══════════════════════════════════════ */
   .script-wrapper {
-    flex: 1;
-    overflow-y: auto;
-    padding: 36px 20px;
-    background:
-      repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 31px,
-        rgba(232,168,56,0.02) 31px,
-        rgba(232,168,56,0.02) 32px
-      );
+    flex: 1; overflow-y: auto; padding: 36px 20px 60px;
+    background: repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(232,168,56,0.02) 31px, rgba(232,168,56,0.02) 32px);
+  }
+
+  .pages-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
   }
 
   .script-page {
-    width: 816px;  /* US Letter 8.5" at 96dpi */
+    width: 816px;
+    height: 1056px;
     max-width: 100%;
-    margin: 0 auto;
     background: var(--paper);
-    box-shadow:
-      0 0 0 1px rgba(0,0,0,0.1),
-      var(--shadow-lg),
-      0 0 80px rgba(232,168,56,0.05);
-    padding: 72px 80px 72px 96px; /* ~1" top/bottom, ~1" right, ~1.5" left margin */
-    min-height: 1056px; /* US Letter 11" at 96dpi */
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1), var(--shadow-lg), 0 0 80px rgba(232,168,56,0.05);
+    padding: 72px 80px 72px 96px;
     position: relative;
     border-radius: 2px;
-    animation: pageIn 0.5s var(--transition-smooth);
-    cursor: text; /* entire page is clickable */
+    cursor: text;
+    flex-shrink: 0;
   }
-
-  /* ══════════════════════════════════════
-     PAGE BREAKS (visual gap like Word/Docs)
-     ══════════════════════════════════════ */
-  .page-break {
-    position: relative;
-    height: 48px;
-    margin: 0 -80px 0 -96px; /* extend to page edges */
-    pointer-events: none;
-    user-select: none;
-    background: var(--bg-primary);
-    background-image:
-      radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.25) 0%, transparent 70%),
-      radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.25) 0%, transparent 70%);
-  }
-  /* Bottom edge shadow of page above */
-  .page-break::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 6px;
-    background: linear-gradient(180deg, rgba(0,0,0,0.15), transparent);
-  }
-  /* Top edge shadow of page below */
-  .page-break::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 6px;
-    background: linear-gradient(0deg, rgba(0,0,0,0.15), transparent);
-  }
-
-  /* Page number footer (sits just above the page break) */
-  .page-footer {
-    text-align: center;
-    padding: 12px 0 4px;
-    margin: 0 -80px 0 -96px;
-    pointer-events: none;
-    user-select: none;
-  }
-  .page-footer-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.62rem;
-    font-weight: 500;
-    letter-spacing: 1px;
-    color: rgba(26,18,8,0.28);
-  }
-
-  /* Page counter in header */
-  .page-counter {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    padding: 4px 12px;
-    background: rgba(232,168,56,0.06);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    letter-spacing: 0.5px;
-    white-space: nowrap;
-  }
-  .page-counter .pc-num {
-    color: var(--accent-amber);
-    font-weight: 500;
-  }
-
+  .script-page:first-child { animation: pageIn 0.5s ease; }
   @keyframes pageIn {
     from { opacity: 0; transform: translateY(16px) scale(0.99); }
     to   { opacity: 1; transform: translateY(0) scale(1); }
   }
 
+  .page-content {
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+  }
+
   /* Binding edge */
   .script-page::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 5px;
-    background: linear-gradient(180deg, var(--deep-red), #5a1010);
-    border-radius: 2px 0 0 2px;
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: linear-gradient(180deg, var(--deep-red), #5a1010); border-radius: 2px 0 0 2px;
   }
-
-  /* Page holes */
+  /* Margin line */
   .script-page::after {
-    content: '';
-    position: absolute;
-    left: 20px; top: 0; bottom: 0;
-    width: 1px;
-    background: repeating-linear-gradient(
-      180deg,
-      transparent 0px,
-      transparent 70px,
-      rgba(139,26,26,0.2) 70px,
-      rgba(139,26,26,0.2) 90px
-    );
+    content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 1px;
+    background: repeating-linear-gradient(180deg, transparent 0px, transparent 70px, rgba(139,26,26,0.2) 70px, rgba(139,26,26,0.2) 90px);
   }
 
-  /* ══════════════════════════════════════
-     SCREENPLAY ELEMENTS
-     ══════════════════════════════════════ */
+  /* Page gap between pages */
+  .page-gap {
+    width: 816px;
+    max-width: 100%;
+    height: 40px;
+    flex-shrink: 0;
+    position: relative;
+    background: var(--bg-primary);
+    background-image:
+      radial-gradient(ellipse at 50% 0%, rgba(0,0,0,0.3) 0%, transparent 70%),
+      radial-gradient(ellipse at 50% 100%, rgba(0,0,0,0.3) 0%, transparent 70%);
+  }
+
+  /* Page number */
+  .page-num {
+    position: absolute; bottom: 28px; left: 0; right: 0; text-align: center;
+    font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; font-weight: 500;
+    color: rgba(26,18,8,0.3); letter-spacing: 1px; pointer-events: none; user-select: none;
+  }
+
+  /* References card (outside page system) */
+  .references-card {
+    width: 816px; max-width: 100%; margin: 24px auto 0;
+    background: var(--paper); padding: 32px 80px 32px 96px;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.1), var(--shadow-md);
+    border-radius: 2px; position: relative; display: none;
+  }
+  .references-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
+    background: linear-gradient(180deg, var(--deep-red), #5a1010); border-radius: 2px 0 0 2px;
+  }
+  .references-card h3 {
+    font-family: 'Playfair Display', serif; font-size: 1rem;
+    color: var(--deep-red); margin-bottom: 12px; letter-spacing: 1px;
+  }
+  .ref-item {
+    display: flex; gap: 8px; font-family: 'Crimson Pro', serif; font-size: 0.85rem;
+    color: rgba(26,18,8,0.7); margin-bottom: 6px; line-height: 1.5;
+  }
+  .ref-item .ref-num { font-weight: 600; color: var(--deep-red); flex-shrink: 0; }
+  .ref-item .ref-text { flex: 1; }
+  .ref-item .ref-delete {
+    opacity: 0; cursor: pointer; color: var(--deep-red); background: none;
+    border: none; font-size: 0.8rem; transition: var(--transition-fast);
+  }
+  .ref-item:hover .ref-delete { opacity: 0.6; }
+  .ref-item .ref-delete:hover { opacity: 1; }
+
+  /* ── SCREENPLAY ELEMENTS ── */
   .script-title-block {
-    text-align: center;
-    margin-bottom: 44px;
-    padding-bottom: 20px;
+    text-align: center; margin-bottom: 44px; padding-bottom: 20px;
     border-bottom: 1px solid rgba(139,26,26,0.12);
   }
   .script-title-block h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.7rem;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--deep-red);
-    margin-bottom: 6px;
+    font-family: 'Playfair Display', serif; font-size: 1.7rem; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--deep-red); margin-bottom: 6px;
   }
   .script-title-block p {
-    font-family: 'Crimson Pro', serif;
-    font-style: italic;
-    color: rgba(26,18,8,0.45);
-    font-size: 0.88rem;
-    letter-spacing: 1.5px;
+    font-family: 'Crimson Pro', serif; font-style: italic;
+    color: rgba(26,18,8,0.45); font-size: 0.88rem; letter-spacing: 1.5px;
   }
 
   .script-block {
-    margin-bottom: 14px;
-    position: relative;
-    cursor: text;
-    transition: var(--transition-fast);
+    margin-bottom: 14px; position: relative; cursor: text; transition: var(--transition-fast);
   }
-  .script-block:last-child { margin-bottom: 0; }
 
-  /* Bookmark icon on blocks */
+  /* Bookmark toggle */
   .script-block .bookmark-toggle {
-    position: absolute;
-    right: -30px;
-    top: 2px;
-    width: 22px; height: 22px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 0.85rem;
-    opacity: 0;
-    transition: var(--transition-fast);
-    border-radius: 3px;
+    position: absolute; right: -30px; top: 2px; width: 22px; height: 22px;
+    background: none; border: none; cursor: pointer; font-size: 0.85rem; opacity: 0;
+    transition: var(--transition-fast); border-radius: 3px;
     display: flex; align-items: center; justify-content: center;
   }
   .script-block:hover .bookmark-toggle { opacity: 0.5; }
   .script-block .bookmark-toggle:hover { opacity: 1 !important; }
   .script-block .bookmark-toggle.bookmarked { opacity: 1; color: var(--accent-amber); }
-  .script-block.is-bookmarked {
-    border-left: 3px solid var(--accent-amber);
-    padding-left: 8px;
-    margin-left: -11px;
-  }
+  .script-block.is-bookmarked { border-left: 3px solid #e8a838; padding-left: 8px; margin-left: -11px; }
 
-  /* SCENE HEADING */
+  /* Delete button */
+  .script-block .block-delete-btn {
+    position: absolute; right: -30px; bottom: 2px;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: rgba(212,99,122,0.1); border: 1px solid rgba(212,99,122,0.25);
+    color: var(--accent-rose); cursor: pointer; font-size: 0.6rem;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: var(--transition-fast);
+  }
+  .script-block:hover .block-delete-btn { opacity: 0.5; }
+  .script-block .block-delete-btn:hover { opacity: 1 !important; background: rgba(212,99,122,0.25); }
+
+  /* Screenplay element types */
   .scene-heading {
-    font-family: 'Crimson Pro', serif;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 1rem;
-    letter-spacing: 1px;
-    color: var(--paper-ink);
-    padding: 4px 0;
-    border-bottom: 1px solid rgba(26,18,8,0.08);
-    margin-bottom: 10px;
+    font-family: 'Crimson Pro', serif; font-weight: 600; text-transform: uppercase;
+    font-size: 1rem; letter-spacing: 1px; color: var(--paper-ink);
+    padding: 4px 0; border-bottom: 1px solid rgba(26,18,8,0.08); margin-bottom: 10px;
   }
   .scene-heading[contenteditable="true"]:empty:before {
-    content: 'INT./EXT. LOCATION — DAY/NIGHT';
-    color: rgba(139,26,26,0.3);
-    font-style: italic;
-    font-weight: 400;
-    text-transform: none;
-    letter-spacing: 0;
+    content: 'INT./EXT. LOCATION — DAY/NIGHT'; color: rgba(139,26,26,0.3);
+    font-style: italic; font-weight: 400; text-transform: none; letter-spacing: 0;
   }
-
-  /* ACTION */
   .action {
-    font-family: 'Crimson Pro', serif;
-    font-size: 1rem;
-    line-height: 1.7;
-    color: var(--paper-ink);
+    font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.7; color: var(--paper-ink);
   }
   .action[contenteditable="true"]:empty:before {
-    content: 'Describe what we see and hear on screen...';
-    color: rgba(26,18,8,0.25);
-    font-style: italic;
+    content: 'Describe what we see and hear on screen...'; color: rgba(26,18,8,0.25); font-style: italic;
   }
-
-  /* CHARACTER */
   .character {
-    font-family: 'Crimson Pro', serif;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 1rem;
-    letter-spacing: 2px;
-    margin-left: 180px;
-    margin-bottom: 4px;
-    color: var(--deep-red);
+    font-family: 'Crimson Pro', serif; font-weight: 600; text-transform: uppercase;
+    font-size: 1rem; letter-spacing: 2px; margin-left: 180px; margin-bottom: 4px; color: var(--deep-red);
   }
   .character[contenteditable="true"]:empty:before {
-    content: 'CHARACTER NAME';
-    color: rgba(139,26,26,0.3);
-    font-style: italic;
-    font-weight: 400;
+    content: 'CHARACTER NAME'; color: rgba(139,26,26,0.3); font-style: italic; font-weight: 400;
   }
-
-  /* DIALOGUE */
   .dialogue {
-    font-family: 'Crimson Pro', serif;
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-left: 100px;
-    margin-right: 100px;
+    font-family: 'Crimson Pro', serif; font-size: 1rem; line-height: 1.6;
+    margin-left: 100px; margin-right: 100px;
   }
   .dialogue[contenteditable="true"]:empty:before {
-    content: 'What the character says...';
-    color: rgba(26,18,8,0.25);
-    font-style: italic;
+    content: 'What the character says...'; color: rgba(26,18,8,0.25); font-style: italic;
   }
-
-  /* PARENTHETICAL */
   .parenthetical {
-    font-family: 'Crimson Pro', serif;
-    font-style: italic;
-    font-size: 0.9rem;
-    margin-left: 130px;
-    margin-right: 130px;
-    color: rgba(26,18,8,0.6);
+    font-family: 'Crimson Pro', serif; font-style: italic; font-size: 0.9rem;
+    margin-left: 130px; margin-right: 130px; color: rgba(26,18,8,0.6);
   }
-  .parenthetical[contenteditable="true"]:empty:before {
-    content: '(acting direction)';
-    color: rgba(26,18,8,0.2);
-  }
-
-  /* TRANSITION */
+  .parenthetical[contenteditable="true"]:empty:before { content: '(acting direction)'; color: rgba(26,18,8,0.2); }
   .transition {
-    font-family: 'Crimson Pro', serif;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-    text-align: right;
-    color: rgba(26,18,8,0.55);
-    margin: 14px 0;
+    font-family: 'Crimson Pro', serif; font-weight: 600; text-transform: uppercase;
+    font-size: 0.9rem; letter-spacing: 2px; text-align: right; color: rgba(26,18,8,0.55); margin: 14px 0;
   }
-
-  /* SONG CUE */
   .song-cue {
-    font-family: 'Playfair Display', serif;
-    font-style: italic;
-    font-size: 0.95rem;
-    text-align: center;
-    color: var(--deep-red);
-    border-top: 1px solid rgba(139,26,26,0.15);
-    border-bottom: 1px solid rgba(139,26,26,0.15);
-    padding: 8px 20px;
-    margin: 14px 0;
-    background: rgba(139,26,26,0.03);
+    font-family: 'Playfair Display', serif; font-style: italic; font-size: 0.95rem;
+    text-align: center; color: var(--deep-red);
+    border-top: 1px solid rgba(139,26,26,0.15); border-bottom: 1px solid rgba(139,26,26,0.15);
+    padding: 8px 20px; margin: 14px 0; background: rgba(139,26,26,0.03);
   }
-
-  /* Element type label */
   .element-label {
-    position: absolute;
-    left: -62px;
-    top: 4px;
-    font-size: 0.55rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 500;
-    letter-spacing: 1px;
-    color: rgba(139,26,26,0.3);
-    text-transform: uppercase;
-    white-space: nowrap;
+    position: absolute; left: -62px; top: 4px; font-size: 0.55rem;
+    font-family: 'JetBrains Mono', monospace; font-weight: 500; letter-spacing: 1px;
+    color: rgba(139,26,26,0.3); text-transform: uppercase; white-space: nowrap;
   }
+  [contenteditable="true"]:focus { outline: none; box-shadow: 0 0 0 2px rgba(232,168,56,0.2); border-radius: 2px; }
 
-  [contenteditable="true"]:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px rgba(232,168,56,0.2);
-    border-radius: 2px;
-  }
-
-  /* Highlights inside contenteditable */
   mark.hl-yellow { background: rgba(255,235,59,0.4); border-radius: 2px; padding: 0 1px; }
   mark.hl-green  { background: rgba(76,175,80,0.3); border-radius: 2px; padding: 0 1px; }
   mark.hl-blue   { background: rgba(66,165,245,0.3); border-radius: 2px; padding: 0 1px; }
   mark.hl-pink   { background: rgba(236,64,122,0.3); border-radius: 2px; padding: 0 1px; }
 
-  /* Citation superscript */
   sup.citation-ref {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.65rem;
-    font-weight: 600;
-    color: var(--deep-red);
-    cursor: pointer;
-    background: rgba(139,26,26,0.08);
-    padding: 0 3px;
-    border-radius: 2px;
-    margin-left: 1px;
+    font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600;
+    color: var(--deep-red); cursor: pointer; background: rgba(139,26,26,0.08);
+    padding: 0 3px; border-radius: 2px; margin-left: 1px;
   }
   sup.citation-ref:hover { background: rgba(139,26,26,0.15); }
 
-  /* References section */
-  .references-section {
-    margin-top: 40px;
-    padding-top: 20px;
-    border-top: 2px solid rgba(139,26,26,0.12);
-  }
-  .references-section h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1rem;
-    color: var(--deep-red);
-    margin-bottom: 12px;
-    letter-spacing: 1px;
-  }
-  .ref-item {
-    display: flex;
-    gap: 8px;
-    font-family: 'Crimson Pro', serif;
-    font-size: 0.85rem;
-    color: rgba(26,18,8,0.7);
-    margin-bottom: 6px;
-    line-height: 1.5;
-  }
-  .ref-item .ref-num {
-    font-weight: 600;
-    color: var(--deep-red);
-    flex-shrink: 0;
-  }
-  .ref-item .ref-text { flex: 1; }
-  .ref-item .ref-delete {
-    opacity: 0;
-    cursor: pointer;
-    color: var(--deep-red);
-    background: none;
-    border: none;
-    font-size: 0.8rem;
-    transition: var(--transition-fast);
-  }
-  .ref-item:hover .ref-delete { opacity: 0.6; }
-  .ref-item .ref-delete:hover { opacity: 1; }
-
-  /* ══════════════════════════════════════
-     RIGHT PANEL: FORMAT GUIDE
-     ══════════════════════════════════════ */
+  /* ── GUIDE PANEL ── */
   .guide-panel {
-    width: 270px;
-    background: var(--bg-glass);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-left: 1px solid var(--border-subtle);
-    overflow-y: auto;
-    flex-shrink: 0;
-    padding: 16px;
+    width: 270px; background: var(--bg-glass); backdrop-filter: blur(16px);
+    border-left: 1px solid var(--border-subtle); overflow-y: auto; flex-shrink: 0; padding: 16px;
   }
-
   .guide-panel h3 {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--accent-amber);
-    letter-spacing: 3px;
-    font-size: 0.7rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-subtle);
+    font-family: 'JetBrains Mono', monospace; color: var(--accent-amber);
+    letter-spacing: 3px; font-size: 0.7rem; font-weight: 500; text-transform: uppercase;
+    margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle);
   }
-
   .format-card {
-    margin-bottom: 12px;
-    padding: 12px;
-    background: rgba(232,168,56,0.03);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
+    margin-bottom: 12px; padding: 12px; background: rgba(232,168,56,0.03);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); transition: var(--transition-fast);
   }
-  .format-card:hover {
-    border-color: var(--border-accent);
-    background: rgba(232,168,56,0.06);
-    transform: translateY(-1px);
-  }
-  .format-card h4 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    color: var(--accent-amber);
-    font-size: 0.78rem;
-    margin-bottom: 5px;
-    letter-spacing: 0.3px;
-  }
-  .format-card p {
-    font-size: 0.72rem;
-    color: var(--text-muted);
-    line-height: 1.55;
-    margin-bottom: 5px;
-  }
+  .format-card:hover { border-color: var(--border-accent); background: rgba(232,168,56,0.06); transform: translateY(-1px); }
+  .format-card h4 { font-family: 'Inter', sans-serif; font-weight: 600; color: var(--accent-amber); font-size: 0.78rem; margin-bottom: 5px; }
+  .format-card p { font-size: 0.72rem; color: var(--text-muted); line-height: 1.55; margin-bottom: 5px; }
   .format-card .example {
-    font-size: 0.68rem;
-    color: rgba(240,236,228,0.35);
-    font-style: italic;
-    border-left: 2px solid rgba(232,168,56,0.2);
-    padding-left: 8px;
-    margin-top: 5px;
-    line-height: 1.5;
+    font-size: 0.68rem; color: rgba(240,236,228,0.35); font-style: italic;
+    border-left: 2px solid rgba(232,168,56,0.2); padding-left: 8px; margin-top: 5px; line-height: 1.5;
   }
-
   .hindi-badge {
-    background: var(--accent-gradient);
-    color: var(--bg-primary);
-    font-size: 0.55rem;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    letter-spacing: 1px;
-    padding: 1px 5px;
-    border-radius: 3px;
-    margin-left: 5px;
-    vertical-align: middle;
+    background: var(--accent-gradient); color: var(--bg-primary);
+    font-size: 0.55rem; font-family: 'JetBrains Mono', monospace; font-weight: 600;
+    letter-spacing: 1px; padding: 1px 5px; border-radius: 3px; margin-left: 5px; vertical-align: middle;
   }
 
-  /* ══════════════════════════════════════
-     FLOATING HIGHLIGHT / CITE TOOLBAR
-     ══════════════════════════════════════ */
+  /* ── FLOATING TOOLBAR ── */
   .float-toolbar {
-    position: absolute;
-    display: none;
-    align-items: center;
-    gap: 4px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-accent);
-    border-radius: var(--radius-md);
-    padding: 5px 8px;
-    box-shadow: var(--shadow-md), var(--shadow-glow);
-    z-index: 200;
-    animation: floatIn 0.2s ease;
+    position: absolute; display: none; align-items: center; gap: 4px;
+    background: var(--bg-elevated); border: 1px solid var(--border-accent);
+    border-radius: var(--radius-md); padding: 5px 8px;
+    box-shadow: var(--shadow-md), var(--shadow-glow); z-index: 200; animation: floatIn 0.2s ease;
   }
   .float-toolbar.visible { display: flex; }
-
-  @keyframes floatIn {
-    from { opacity: 0; transform: translateY(6px) scale(0.95); }
-    to   { opacity: 1; transform: translateY(0) scale(1); }
-  }
-
-  .hl-btn {
-    width: 22px; height: 22px;
-    border-radius: 50%;
-    border: 2px solid transparent;
-    cursor: pointer;
-    transition: var(--transition-fast);
-    position: relative;
-  }
+  @keyframes floatIn { from { opacity: 0; transform: translateY(6px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .hl-btn { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: var(--transition-fast); }
   .hl-btn:hover { transform: scale(1.2); border-color: rgba(255,255,255,0.5); }
   .hl-btn.hl-yellow-btn { background: #fdd835; }
   .hl-btn.hl-green-btn  { background: #66bb6a; }
   .hl-btn.hl-blue-btn   { background: #42a5f5; }
   .hl-btn.hl-pink-btn   { background: #ec407a; }
   .hl-btn.hl-clear-btn  {
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.3);
-    font-size: 0.6rem;
-    color: var(--text-secondary);
-    display: flex; align-items: center; justify-content: center;
-    width: auto; height: auto;
-    padding: 3px 8px;
-    border-radius: var(--radius-sm);
+    background: transparent; border: 1px solid rgba(255,255,255,0.3); font-size: 0.6rem;
+    color: var(--text-secondary); display: flex; align-items: center; justify-content: center;
+    width: auto; height: auto; padding: 3px 8px; border-radius: var(--radius-sm);
   }
-
-  .float-divider {
-    width: 1px;
-    height: 18px;
-    background: var(--border-subtle);
-    margin: 0 4px;
-  }
-
+  .float-divider { width: 1px; height: 18px; background: var(--border-subtle); margin: 0 4px; }
   .cite-btn {
-    padding: 3px 10px;
-    background: rgba(139,26,26,0.2);
-    border: 1px solid rgba(139,26,26,0.4);
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.68rem;
-    font-weight: 500;
-    cursor: pointer;
-    border-radius: var(--radius-sm);
-    transition: var(--transition-fast);
-    letter-spacing: 0.3px;
+    padding: 3px 10px; background: rgba(139,26,26,0.2); border: 1px solid rgba(139,26,26,0.4);
+    color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 500;
+    cursor: pointer; border-radius: var(--radius-sm); transition: var(--transition-fast);
   }
   .cite-btn:hover { background: rgba(139,26,26,0.35); }
 
-  /* ══════════════════════════════════════
-     CITATION MODAL
-     ══════════════════════════════════════ */
+  /* ── MODAL ── */
   .modal-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    backdrop-filter: blur(6px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 300;
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center; z-index: 300;
   }
   .modal-overlay.visible { display: flex; }
-
   .modal {
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-accent);
-    border-radius: var(--radius-lg);
-    padding: 28px;
-    width: 420px;
-    max-width: 90vw;
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
-    animation: modalIn 0.3s ease;
+    background: var(--bg-elevated); border: 1px solid var(--border-accent);
+    border-radius: var(--radius-lg); padding: 28px; width: 420px; max-width: 90vw;
+    box-shadow: var(--shadow-lg), var(--shadow-glow); animation: modalIn 0.3s ease;
   }
-
-  @keyframes modalIn {
-    from { opacity: 0; transform: scale(0.95) translateY(10px); }
-    to   { opacity: 1; transform: scale(1) translateY(0); }
-  }
-
-  .modal h3 {
-    font-family: 'Inter', sans-serif;
-    font-weight: 600;
-    font-size: 1rem;
-    color: var(--text-primary);
-    margin-bottom: 6px;
-  }
-  .modal p {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    margin-bottom: 16px;
-  }
+  @keyframes modalIn { from { opacity: 0; transform: scale(0.95) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+  .modal h3 { font-family: 'Inter', sans-serif; font-weight: 600; font-size: 1rem; color: var(--text-primary); margin-bottom: 6px; }
+  .modal p { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 16px; }
   .modal textarea {
-    width: 100%;
-    min-height: 80px;
-    background: var(--bg-primary);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-sm);
-    color: var(--text-primary);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.85rem;
-    padding: 10px 12px;
-    resize: vertical;
-    transition: var(--transition-fast);
+    width: 100%; min-height: 80px; background: var(--bg-primary);
+    border: 1px solid var(--border-subtle); border-radius: var(--radius-sm);
+    color: var(--text-primary); font-family: 'Inter', sans-serif; font-size: 0.85rem;
+    padding: 10px 12px; resize: vertical; transition: var(--transition-fast);
   }
   .modal textarea:focus { outline: none; border-color: var(--accent-amber); }
-  .modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 8px;
-    margin-top: 14px;
-  }
+  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
-  /* ══════════════════════════════════════
-     ANIMATIONS
-     ══════════════════════════════════════ */
-  @keyframes blockFadeIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .script-block.new-block {
-    animation: blockFadeIn 0.3s ease;
-  }
+  @keyframes blockFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .script-block.new-block { animation: blockFadeIn 0.3s ease; }
 
-  /* ══════════════════════════════════════
-     TOAST
-     ══════════════════════════════════════ */
   .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    background: var(--bg-elevated);
-    border: 1px solid var(--border-accent);
-    border-radius: var(--radius-md);
-    padding: 12px 20px;
-    color: var(--text-primary);
-    font-size: 0.82rem;
-    z-index: 400;
+    position: fixed; bottom: 24px; right: 24px; background: var(--bg-elevated);
+    border: 1px solid var(--border-accent); border-radius: var(--radius-md);
+    padding: 12px 20px; color: var(--text-primary); font-size: 0.82rem; z-index: 400;
     box-shadow: var(--shadow-md);
     animation: toastIn 0.3s ease, toastOut 0.3s ease 2.2s forwards;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    display: flex; align-items: center; gap: 8px;
   }
-  @keyframes toastIn {
-    from { opacity: 0; transform: translateY(12px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes toastOut {
-    from { opacity: 1; transform: translateY(0); }
-    to   { opacity: 0; transform: translateY(12px); }
-  }
+  @keyframes toastIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(12px); } }
 </style>
 </head>
 <body>
@@ -971,234 +470,161 @@
 <header>
   <div class="logo-area">
     <div class="logo-icon">🎬</div>
-    <div class="logo-text">
-      <h1>Filmi Script</h1>
-      <span>Hindi Screenplay Writer</span>
-    </div>
+    <div class="logo-text"><h1>Filmi Script</h1><span>Hindi Screenplay Writer</span></div>
   </div>
   <div class="header-actions">
-    <div class="page-counter" id="pageCounter" title="Estimated pages (1 page ≈ 1 min screen time)">
-      📄 <span class="pc-num" id="pageCountNum">1</span> <span>pg</span>
-    </div>
-    <div class="save-indicator" id="saveIndicator">
-      <span class="save-dot"></span>
-      <span>Saved</span>
-    </div>
-    <button class="btn" id="btnClear" onclick="clearScript()">Clear</button>
-    <button class="btn" id="btnExport" onclick="exportJSON()">Export</button>
-    <button class="btn" id="btnImport" onclick="document.getElementById('importInput').click()">Import</button>
+    <div class="page-counter" id="pageCounter" title="Estimated pages (1 page ≈ 1 min screen time)">📄 <span class="pc-num" id="pageCountNum">1</span> <span>pg</span></div>
+    <div class="save-indicator" id="saveIndicator"><span class="save-dot"></span><span>Saved</span></div>
+    <button class="btn" onclick="clearScript()">Clear</button>
+    <button class="btn" onclick="exportJSON()">Export</button>
+    <button class="btn" onclick="document.getElementById('importInput').click()">Import</button>
     <input type="file" id="importInput" accept=".json" style="display:none" onchange="importJSON(event)">
-    <button class="btn primary" id="btnDownload" onclick="downloadScript()">⬇ Download</button>
+    <button class="btn primary" onclick="downloadScript()">⬇ Download</button>
   </div>
 </header>
 
-<!-- Toolbar -->
-<div class="toolbar" id="mainToolbar">
+<div class="toolbar">
   <span class="toolbar-label">Insert</span>
-  <button class="tool-btn" id="tbSceneHeading" onclick="addElement('scene-heading')">🎬 Scene</button>
-  <button class="tool-btn" id="tbAction" onclick="addElement('action')">📝 Action</button>
-  <button class="tool-btn" id="tbCharacter" onclick="addElement('character')">🎭 Character</button>
-  <button class="tool-btn" id="tbDialogue" onclick="addElement('dialogue')">💬 Dialogue</button>
-  <button class="tool-btn" id="tbParenthetical" onclick="addElement('parenthetical')">( ) Parenthetical</button>
-  <button class="tool-btn" id="tbTransition" onclick="addElement('transition')">⟶ Transition</button>
-  <button class="tool-btn" id="tbSongCue" onclick="addElement('song-cue')">🎵 Song Cue</button>
+  <button class="tool-btn" onclick="addElement('scene-heading')">🎬 Scene</button>
+  <button class="tool-btn" onclick="addElement('action')">📝 Action</button>
+  <button class="tool-btn" onclick="addElement('character')">🎭 Character</button>
+  <button class="tool-btn" onclick="addElement('dialogue')">💬 Dialogue</button>
+  <button class="tool-btn" onclick="addElement('parenthetical')">( ) Parenthetical</button>
+  <button class="tool-btn" onclick="addElement('transition')">⟶ Transition</button>
+  <button class="tool-btn" onclick="addElement('song-cue')">🎵 Song Cue</button>
 </div>
 
 <div class="main">
-
-  <!-- Left Sidebar -->
-  <aside class="sidebar" id="sidebarPanel">
+  <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-title">Elements</div>
-      <button class="element-btn" id="sbSceneHeading" onclick="addElement('scene-heading')">
-        <span>🎬</span><span>Scene Heading</span><span class="kbd">Alt+S</span>
-      </button>
-      <button class="element-btn" id="sbAction" onclick="addElement('action')">
-        <span>📝</span><span>Action Line</span><span class="kbd">Alt+A</span>
-      </button>
-      <button class="element-btn" id="sbCharacter" onclick="addElement('character')">
-        <span>🎭</span><span>Character</span><span class="kbd">Alt+C</span>
-      </button>
-      <button class="element-btn" id="sbDialogue" onclick="addElement('dialogue')">
-        <span>💬</span><span>Dialogue</span><span class="kbd">Alt+D</span>
-      </button>
-      <button class="element-btn" id="sbParenthetical" onclick="addElement('parenthetical')">
-        <span>( )</span><span>Parenthetical</span><span class="kbd">Alt+P</span>
-      </button>
-      <button class="element-btn" id="sbTransition" onclick="addElement('transition')">
-        <span>⟶</span><span>Transition</span><span class="kbd">Alt+T</span>
-      </button>
-      <button class="element-btn" id="sbSongCue" onclick="addElement('song-cue')">
-        <span>🎵</span><span>Song Cue</span><span class="kbd">Alt+G</span>
-      </button>
+      <button class="element-btn" onclick="addElement('scene-heading')"><span>🎬</span><span>Scene Heading</span><span class="kbd">Alt+S</span></button>
+      <button class="element-btn" onclick="addElement('action')"><span>📝</span><span>Action Line</span><span class="kbd">Alt+A</span></button>
+      <button class="element-btn" onclick="addElement('character')"><span>🎭</span><span>Character</span><span class="kbd">Alt+C</span></button>
+      <button class="element-btn" onclick="addElement('dialogue')"><span>💬</span><span>Dialogue</span><span class="kbd">Alt+D</span></button>
+      <button class="element-btn" onclick="addElement('parenthetical')"><span>( )</span><span>Parenthetical</span><span class="kbd">Alt+P</span></button>
+      <button class="element-btn" onclick="addElement('transition')"><span>⟶</span><span>Transition</span><span class="kbd">Alt+T</span></button>
+      <button class="element-btn" onclick="addElement('song-cue')"><span>🎵</span><span>Song Cue</span><span class="kbd">Alt+G</span></button>
     </div>
-
-    <!-- Bookmarks -->
     <div class="sidebar-section">
       <div class="sidebar-title">🔖 Bookmarks</div>
-      <div id="bookmarksList">
-        <div class="no-bookmarks">No bookmarks yet</div>
-      </div>
+      <div id="bookmarksList"><div class="no-bookmarks">No bookmarks yet</div></div>
     </div>
-
     <div class="sidebar-section">
       <div class="sidebar-title">Quick Tips</div>
-      <div class="tip-box">
-        <strong>Scene Heading</strong>
-        Always starts with INT. (indoors) or EXT. (outdoors), then location, then time.
-      </div>
-      <div class="tip-box">
-        <strong>Dialogue Flow</strong>
-        Character name → Parenthetical (optional) → Dialogue. Always in this order!
-      </div>
-      <div class="tip-box">
-        <strong>Hindi Film Tip 🎵</strong>
-        Use the Song Cue element before a song sequence. Write the song name in CAPS.
-      </div>
+      <div class="tip-box"><strong>Scene Heading</strong>Always starts with INT. or EXT., then location, then time.</div>
+      <div class="tip-box"><strong>Dialogue Flow</strong>Character → Parenthetical (optional) → Dialogue.</div>
+      <div class="tip-box"><strong>Hindi Film Tip 🎵</strong>Use Song Cue before a song sequence. Song name in CAPS.</div>
+      <div class="tip-box"><strong>Delete Blocks</strong>Hover a block → click ✕ or press Backspace when empty.</div>
     </div>
   </aside>
 
-  <!-- Script Page -->
   <div class="script-wrapper" id="scriptWrapper">
-    <div class="script-page" id="scriptPage">
+    <div class="pages-container" id="pagesContainer">
+      <!-- Page 1 -->
+      <div class="script-page" data-page="1">
+        <div class="page-content" id="pageContent1">
+          <div class="script-title-block">
+            <h1 contenteditable="true" id="movieTitle">APNA TITLE LIKHO</h1>
+            <p contenteditable="true" id="movieSubtitle">Written by / लिखा गया</p>
+          </div>
+          <div class="script-block" data-block-id="b1">
+            <span class="element-label">SCENE</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="scene-heading" contenteditable="true">INT. MUMBAI FLAT - MORNING</div>
+          </div>
+          <div class="script-block" data-block-id="b2">
+            <span class="element-label">ACTION</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="action" contenteditable="true">A small, cluttered flat. Clothes everywhere. RAHUL (25, charming but broke) wakes up to the sound of his landlord pounding on the door.</div>
+          </div>
+          <div class="script-block" data-block-id="b3">
+            <span class="element-label">CHARACTER</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="character" contenteditable="true">LANDLORD (O.S.)</div>
+          </div>
+          <div class="script-block" data-block-id="b4">
+            <span class="element-label">PARENTH.</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="parenthetical" contenteditable="true">(shouting, angry)</div>
+          </div>
+          <div class="script-block" data-block-id="b5">
+            <span class="element-label">DIALOGUE</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="dialogue" contenteditable="true">Rahul bhai! Teen mahine ho gaye! Kiraya kab doge?!</div>
+          </div>
+          <div class="script-block" data-block-id="b6">
+            <span class="element-label">CHARACTER</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="character" contenteditable="true">RAHUL</div>
+          </div>
+          <div class="script-block" data-block-id="b7">
+            <span class="element-label">PARENTH.</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="parenthetical" contenteditable="true">(groaning, to himself)</div>
+          </div>
+          <div class="script-block" data-block-id="b8">
+            <span class="element-label">DIALOGUE</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="dialogue" contenteditable="true">Aaj toh pakka... kal se.</div>
+          </div>
+          <div class="script-block" data-block-id="b9">
+            <span class="element-label">ACTION</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="action" contenteditable="true">He pulls the blanket over his head. His phone buzzes. A message from an unknown number: "I need a miracle. You're it."</div>
+          </div>
+          <div class="script-block" data-block-id="b10">
+            <span class="element-label">TRANSITION</span>
+            <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
+            <button class="block-delete-btn" onclick="deleteBlock(this.closest('.script-block'))" title="Delete block">✕</button>
+            <div class="transition" contenteditable="true">CUT TO:</div>
+          </div>
+        </div>
+        <div class="page-num">1</div>
+      </div>
+    </div>
 
-      <div class="script-title-block">
-        <h1 contenteditable="true" id="movieTitle">APNA TITLE LIKHO</h1>
-        <p contenteditable="true" id="movieSubtitle">Written by / लिखा गया</p>
-      </div>
-
-      <!-- Sample content -->
-      <div class="script-block" data-block-id="b1">
-        <span class="element-label">SCENE</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="scene-heading" contenteditable="true">INT. MUMBAI FLAT - MORNING</div>
-      </div>
-
-      <div class="script-block" data-block-id="b2">
-        <span class="element-label">ACTION</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="action" contenteditable="true">A small, cluttered flat. Clothes everywhere. RAHUL (25, charming but broke) wakes up to the sound of his landlord pounding on the door.</div>
-      </div>
-
-      <div class="script-block" data-block-id="b3">
-        <span class="element-label">CHARACTER</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="character" contenteditable="true">LANDLORD (O.S.)</div>
-      </div>
-      <div class="script-block" data-block-id="b4">
-        <span class="element-label">PARENTH.</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="parenthetical" contenteditable="true">(shouting, angry)</div>
-      </div>
-      <div class="script-block" data-block-id="b5">
-        <span class="element-label">DIALOGUE</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="dialogue" contenteditable="true">Rahul bhai! Teen mahine ho gaye! Kiraya kab doge?!</div>
-      </div>
-
-      <div class="script-block" data-block-id="b6">
-        <span class="element-label">CHARACTER</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="character" contenteditable="true">RAHUL</div>
-      </div>
-      <div class="script-block" data-block-id="b7">
-        <span class="element-label">PARENTH.</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="parenthetical" contenteditable="true">(groaning, to himself)</div>
-      </div>
-      <div class="script-block" data-block-id="b8">
-        <span class="element-label">DIALOGUE</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="dialogue" contenteditable="true">Aaj toh pakka... kal se.</div>
-      </div>
-
-      <div class="script-block" data-block-id="b9">
-        <span class="element-label">ACTION</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="action" contenteditable="true">He pulls the blanket over his head. His phone buzzes. A message from an unknown number: "I need a miracle. You're it."</div>
-      </div>
-
-      <div class="script-block" data-block-id="b10">
-        <span class="element-label">TRANSITION</span>
-        <button class="bookmark-toggle" onclick="toggleBookmark(this)" title="Bookmark">🔖</button>
-        <div class="transition" contenteditable="true">CUT TO:</div>
-      </div>
-
-      <!-- References section (hidden until citations exist) -->
-      <div class="references-section" id="referencesSection" style="display:none;">
-        <h3>References</h3>
-        <div id="referencesList"></div>
-      </div>
-
+    <!-- References (outside page system) -->
+    <div class="references-card" id="referencesSection">
+      <h3>References</h3>
+      <div id="referencesList"></div>
     </div>
   </div>
 
-  <!-- Right Panel: Format Guide -->
-  <aside class="guide-panel" id="guidePanel">
+  <aside class="guide-panel">
     <h3>Format Guide</h3>
-
-    <div class="format-card">
-      <h4>🎬 Scene Heading <span class="hindi-badge">INT/EXT</span></h4>
-      <p>Also called a "slug line". Tells us WHERE and WHEN a scene takes place. Always in UPPERCASE.</p>
-      <div class="example">INT. DELHI MARKET — DAY<br>EXT. MUMBAI BEACH — NIGHT</div>
-    </div>
-
-    <div class="format-card">
-      <h4>📝 Action Line</h4>
-      <p>Describe only what the camera SEES and EARS can HEAR. Write in present tense.</p>
-      <div class="example">❌ Priya thinks about him.<br>✅ Priya stares at his photo, eyes filling with tears.</div>
-    </div>
-
-    <div class="format-card">
-      <h4>🎭 Character Cue</h4>
-      <p>Name in ALL CAPS. Add (V.O.) for voice-over, (O.S.) if off-screen.</p>
-      <div class="example">VIKRAM<br>PRIYA (V.O.)<br>SHARMA JI (O.S.)</div>
-    </div>
-
-    <div class="format-card">
-      <h4>💬 Dialogue</h4>
-      <p>Centered block below the character name. Can mix Hindi &amp; English (Hinglish)!</p>
-      <div class="example">"Ek baar jo maine commitment kar li..."</div>
-    </div>
-
-    <div class="format-card">
-      <h4>( ) Parenthetical</h4>
-      <p>Acting direction in brackets, placed between character name and dialogue.</p>
-      <div class="example">(crying)<br>(whispering, afraid)</div>
-    </div>
-
-    <div class="format-card">
-      <h4>⟶ Transition</h4>
-      <p>How we move from one scene to the next. Right-aligned, in caps.</p>
-      <div class="example">CUT TO:<br>DISSOLVE TO:<br>SMASH CUT TO:</div>
-    </div>
-
-    <div class="format-card">
-      <h4>🎵 Song Cue <span class="hindi-badge">HINDI FILM</span></h4>
-      <p>Unique to Hindi films! Marks where a song-and-dance sequence begins.</p>
-      <div class="example">SONG: "DIL DHADAKNE DO"<br>— A dream sequence begins —</div>
-    </div>
-
-    <div class="format-card">
-      <h4>💡 Golden Rules</h4>
-      <p>• 1 page ≈ 1 minute of screen time<br>• Introduce characters in CAPS first<br>• Hindi films average 150–170 pages</p>
-    </div>
+    <div class="format-card"><h4>🎬 Scene Heading <span class="hindi-badge">INT/EXT</span></h4><p>Slug line: WHERE and WHEN. Always UPPERCASE.</p><div class="example">INT. DELHI MARKET — DAY<br>EXT. MUMBAI BEACH — NIGHT</div></div>
+    <div class="format-card"><h4>📝 Action Line</h4><p>What the camera SEES and EARS can HEAR. Present tense.</p><div class="example">✅ Priya stares at his photo, eyes filling with tears.</div></div>
+    <div class="format-card"><h4>🎭 Character Cue</h4><p>ALL CAPS. (V.O.) for voice-over, (O.S.) for off-screen.</p><div class="example">VIKRAM<br>PRIYA (V.O.)</div></div>
+    <div class="format-card"><h4>💬 Dialogue</h4><p>Below character name. Mix Hindi &amp; English freely!</p><div class="example">"Ek baar jo maine commitment kar li..."</div></div>
+    <div class="format-card"><h4>( ) Parenthetical</h4><p>Acting direction between character and dialogue.</p><div class="example">(crying)<br>(whispering, afraid)</div></div>
+    <div class="format-card"><h4>⟶ Transition</h4><p>Scene transition. Right-aligned, in caps.</p><div class="example">CUT TO:<br>DISSOLVE TO:</div></div>
+    <div class="format-card"><h4>🎵 Song Cue <span class="hindi-badge">HINDI FILM</span></h4><p>Marks where a song sequence begins.</p><div class="example">SONG: "DIL DHADAKNE DO"</div></div>
+    <div class="format-card"><h4>💡 Golden Rules</h4><p>• 1 page ≈ 1 min screen time<br>• Characters in CAPS on first appearance<br>• Hindi films: 150–170 pages</p></div>
   </aside>
-
 </div>
 
-<!-- Floating Highlight/Cite Toolbar -->
+<!-- Floating toolbar -->
 <div class="float-toolbar" id="floatToolbar">
-  <button class="hl-btn hl-yellow-btn" title="Highlight Yellow" onclick="applyHighlight('yellow')"></button>
-  <button class="hl-btn hl-green-btn" title="Highlight Green" onclick="applyHighlight('green')"></button>
-  <button class="hl-btn hl-blue-btn" title="Highlight Blue" onclick="applyHighlight('blue')"></button>
-  <button class="hl-btn hl-pink-btn" title="Highlight Pink" onclick="applyHighlight('pink')"></button>
-  <button class="hl-btn hl-clear-btn" title="Remove Highlight" onclick="clearHighlight()">✕</button>
+  <button class="hl-btn hl-yellow-btn" title="Yellow" onclick="applyHighlight('yellow')"></button>
+  <button class="hl-btn hl-green-btn" title="Green" onclick="applyHighlight('green')"></button>
+  <button class="hl-btn hl-blue-btn" title="Blue" onclick="applyHighlight('blue')"></button>
+  <button class="hl-btn hl-pink-btn" title="Pink" onclick="applyHighlight('pink')"></button>
+  <button class="hl-btn hl-clear-btn" title="Remove" onclick="clearHighlight()">✕</button>
   <div class="float-divider"></div>
   <button class="cite-btn" onclick="openCitationModal()">📌 Cite</button>
 </div>
 
-<!-- Citation Modal -->
+<!-- Citation modal -->
 <div class="modal-overlay" id="citationModal">
   <div class="modal">
     <h3>Add Citation</h3>
@@ -1212,50 +638,51 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // STATE
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 let blockCounter = 10;
 let citations = [];
 let bookmarks = new Set();
 let saveTimeout = null;
 let savedSelection = null;
+let reflowScheduled = false;
 
 const STORAGE_KEY = 'filmi_script_data';
+const BLOCK_TYPES = ['scene-heading','action','character','dialogue','parenthetical','transition','song-cue'];
 
-// ═══════════════════════════════════════
-// AUTO-SAVE SYSTEM
-// ═══════════════════════════════════════
+function getBlockType(el) {
+  return Array.from(el.classList).find(c => BLOCK_TYPES.includes(c));
+}
+
+// ═══════════════════════════════════════════════════════
+// AUTO-SAVE
+// ═══════════════════════════════════════════════════════
 function gatherState() {
   const title = document.getElementById('movieTitle').innerHTML;
   const subtitle = document.getElementById('movieSubtitle').innerHTML;
-
   const blocks = [];
-  document.querySelectorAll('.script-block').forEach(block => {
-    const id = block.getAttribute('data-block-id');
-    const contentEl = block.querySelector('[contenteditable="true"]');
-    if (!contentEl) return;
-    const classList = Array.from(contentEl.classList);
-    const type = classList.find(c => ['scene-heading','action','character','dialogue','parenthetical','transition','song-cue'].includes(c));
-    blocks.push({
-      id,
-      type,
-      html: contentEl.innerHTML,
-      bookmarked: block.classList.contains('is-bookmarked')
+  // Collect from all pages in order
+  document.querySelectorAll('.script-page').forEach(page => {
+    page.querySelectorAll('.script-block').forEach(block => {
+      const contentEl = block.querySelector('[contenteditable="true"]');
+      if (!contentEl) return;
+      blocks.push({
+        id: block.getAttribute('data-block-id'),
+        type: getBlockType(contentEl),
+        html: contentEl.innerHTML,
+        bookmarked: block.classList.contains('is-bookmarked')
+      });
     });
   });
-
-  return { title, subtitle, blocks, citations, version: 1 };
+  return { title, subtitle, blocks, citations, version: 2 };
 }
 
 function saveState() {
   try {
-    const state = gatherState();
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(gatherState()));
     showSaveIndicator();
-  } catch (e) {
-    console.warn('Auto-save failed:', e);
-  }
+  } catch (e) { console.warn('Auto-save failed:', e); }
 }
 
 function debouncedSave() {
@@ -1280,61 +707,226 @@ function restoreState() {
     document.getElementById('movieTitle').innerHTML = state.title || 'APNA TITLE LIKHO';
     document.getElementById('movieSubtitle').innerHTML = state.subtitle || 'Written by / लिखा गया';
 
-    // Clear existing blocks
-    const page = document.getElementById('scriptPage');
-    const titleBlock = page.querySelector('.script-title-block');
-    const refsSection = document.getElementById('referencesSection');
-    page.innerHTML = '';
-    page.appendChild(titleBlock);
+    // Clear existing blocks from page 1
+    const page1Content = document.querySelector('.script-page[data-page="1"] .page-content');
+    page1Content.querySelectorAll('.script-block').forEach(b => b.remove());
 
-    // Rebuild blocks
+    // Add all blocks to page 1
     state.blocks.forEach(b => {
       const block = createBlockElement(b.type, b.html, b.id, b.bookmarked);
-      page.appendChild(block);
+      page1Content.appendChild(block);
     });
 
-    // Restore citations
-    if (state.citations) {
-      citations = state.citations;
-      renderReferences();
-    }
+    if (state.citations) { citations = state.citations; renderReferences(); }
 
-    // Re-append refs section
-    page.appendChild(refsSection);
-
-    // Rebuild bookmark counter
+    // Rebuild bookmarks
     blockCounter = 0;
+    bookmarks = new Set();
     document.querySelectorAll('.script-block').forEach(bl => {
       const id = bl.getAttribute('data-block-id');
-      if (id) {
-        const num = parseInt(id.replace('b', ''));
-        if (num > blockCounter) blockCounter = num;
-      }
-    });
-
-    // Rebuild bookmarks sidebar
-    bookmarks = new Set();
-    document.querySelectorAll('.script-block.is-bookmarked').forEach(bl => {
-      bookmarks.add(bl.getAttribute('data-block-id'));
+      if (id) { const n = parseInt(id.replace('b','')); if (n > blockCounter) blockCounter = n; }
+      if (bl.classList.contains('is-bookmarked')) bookmarks.add(id);
     });
     renderBookmarks();
 
-  } catch (e) {
-    console.warn('Restore failed:', e);
-  }
+    // Reflow will distribute across pages
+    setTimeout(reflow, 50);
+  } catch (e) { console.warn('Restore failed:', e); }
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// REFLOW ENGINE — Real pagination like Word/Docs
+// ═══════════════════════════════════════════════════════
+function createPage(pageNum) {
+  const container = document.getElementById('pagesContainer');
+
+  // Add gap before new page
+  const gap = document.createElement('div');
+  gap.className = 'page-gap';
+  container.appendChild(gap);
+
+  const page = document.createElement('div');
+  page.className = 'script-page';
+  page.setAttribute('data-page', pageNum);
+
+  const content = document.createElement('div');
+  content.className = 'page-content';
+
+  const num = document.createElement('div');
+  num.className = 'page-num';
+  num.textContent = pageNum;
+
+  page.appendChild(content);
+  page.appendChild(num);
+  container.appendChild(page);
+
+  // Wire up click-to-type on new page
+  content.addEventListener('click', handlePageClick);
+
+  return page;
+}
+
+function saveCursor() {
+  const active = document.activeElement;
+  if (!active || !active.closest('.script-block')) return null;
+  const block = active.closest('.script-block');
+  const sel = window.getSelection();
+  let offset = null;
+  if (sel && sel.rangeCount > 0) {
+    try {
+      const range = sel.getRangeAt(0);
+      const pre = document.createRange();
+      pre.selectNodeContents(active);
+      pre.setEnd(range.startContainer, range.startOffset);
+      offset = pre.toString().length;
+    } catch(e) {}
+  }
+  return { blockId: block.dataset.blockId, offset };
+}
+
+function restoreCursor(info) {
+  if (!info) return;
+  const block = document.querySelector(`[data-block-id="${info.blockId}"]`);
+  if (!block) return;
+  const editable = block.querySelector('[contenteditable="true"]');
+  if (!editable) return;
+  editable.focus();
+  if (info.offset === null) return;
+  try {
+    const sel = window.getSelection();
+    const range = document.createRange();
+    let currentOffset = 0;
+    const walker = document.createTreeWalker(editable, NodeFilter.SHOW_TEXT);
+    let node;
+    while (node = walker.nextNode()) {
+      if (currentOffset + node.length >= info.offset) {
+        range.setStart(node, info.offset - currentOffset);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        return;
+      }
+      currentOffset += node.length;
+    }
+    // Fallback: end of content
+    range.selectNodeContents(editable);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  } catch(e) {}
+}
+
+function isPageOverflowing(page) {
+  const content = page.querySelector('.page-content');
+  return content.scrollHeight > content.clientHeight;
+}
+
+function reflow() {
+  const cursor = saveCursor();
+  const container = document.getElementById('pagesContainer');
+  let pages = Array.from(container.querySelectorAll('.script-page'));
+
+  if (pages.length === 0) return;
+
+  let changed = true;
+  let iterations = 0;
+
+  while (changed && iterations < 100) {
+    changed = false;
+    iterations++;
+    pages = Array.from(container.querySelectorAll('.script-page'));
+
+    // Forward pass: move overflow blocks to next page
+    for (let i = 0; i < pages.length; i++) {
+      const content = pages[i].querySelector('.page-content');
+
+      while (content.scrollHeight > content.clientHeight + 2) { // 2px tolerance
+        const blocks = Array.from(content.querySelectorAll(':scope > .script-block'));
+        if (blocks.length === 0) break;
+
+        const lastBlock = blocks[blocks.length - 1];
+
+        // Safety: if only 1 block and it's the only content, can't move
+        const hasOnlyOneBlock = blocks.length === 1;
+        const hasTitleBlock = !!content.querySelector('.script-title-block');
+        if (hasOnlyOneBlock && !hasTitleBlock) break;
+
+        // Get or create next page
+        let nextPage = pages[i + 1];
+        if (!nextPage) {
+          nextPage = createPage(i + 2);
+          pages = Array.from(container.querySelectorAll('.script-page'));
+        }
+
+        const nextContent = nextPage.querySelector('.page-content');
+        nextContent.insertBefore(lastBlock, nextContent.firstChild);
+        changed = true;
+
+        // If only title block remains and still overflows, break
+        if (content.querySelectorAll(':scope > .script-block').length === 0) break;
+      }
+    }
+
+    // Backward pass: pull blocks back if space available
+    pages = Array.from(container.querySelectorAll('.script-page'));
+    for (let i = 0; i < pages.length - 1; i++) {
+      const content = pages[i].querySelector('.page-content');
+      const nextContent = pages[i + 1].querySelector('.page-content');
+
+      while (true) {
+        const firstBlock = nextContent.querySelector(':scope > .script-block');
+        if (!firstBlock) break;
+
+        content.appendChild(firstBlock);
+
+        if (content.scrollHeight > content.clientHeight + 2) {
+          // Doesn't fit — put it back
+          nextContent.insertBefore(firstBlock, nextContent.firstChild);
+          break;
+        }
+        changed = true;
+      }
+    }
+
+    // Remove empty pages (except page 1)
+    pages = Array.from(container.querySelectorAll('.script-page'));
+    for (let i = pages.length - 1; i >= 1; i--) {
+      const blocks = pages[i].querySelectorAll('.script-block');
+      if (blocks.length === 0) {
+        const gap = pages[i].previousElementSibling;
+        if (gap && gap.classList.contains('page-gap')) gap.remove();
+        pages[i].remove();
+        changed = true;
+      }
+    }
+  }
+
+  // Update page numbers and counter
+  pages = Array.from(container.querySelectorAll('.script-page'));
+  pages.forEach((page, i) => {
+    page.setAttribute('data-page', i + 1);
+    const num = page.querySelector('.page-num');
+    if (num) num.textContent = i + 1;
+  });
+  document.getElementById('pageCountNum').textContent = pages.length;
+
+  restoreCursor(cursor);
+  reflowScheduled = false;
+}
+
+function scheduleReflow() {
+  if (reflowScheduled) return;
+  reflowScheduled = true;
+  requestAnimationFrame(reflow);
+}
+
+// ═══════════════════════════════════════════════════════
 // ELEMENT CREATION
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 const labelMap = {
-  'scene-heading': 'SCENE',
-  'action': 'ACTION',
-  'character': 'CHARACTER',
-  'dialogue': 'DIALOGUE',
-  'parenthetical': 'PARENTH.',
-  'transition': 'TRANSITION',
-  'song-cue': 'SONG'
+  'scene-heading': 'SCENE', 'action': 'ACTION', 'character': 'CHARACTER',
+  'dialogue': 'DIALOGUE', 'parenthetical': 'PARENTH.',
+  'transition': 'TRANSITION', 'song-cue': 'SONG'
 };
 
 function createBlockElement(type, html, id, isBookmarked) {
@@ -1349,9 +941,13 @@ function createBlockElement(type, html, id, isBookmarked) {
 
   const bmBtn = document.createElement('button');
   bmBtn.className = 'bookmark-toggle' + (isBookmarked ? ' bookmarked' : '');
-  bmBtn.title = 'Bookmark';
-  bmBtn.textContent = '🔖';
+  bmBtn.title = 'Bookmark'; bmBtn.textContent = '🔖';
   bmBtn.onclick = function() { toggleBookmark(this); };
+
+  const delBtn = document.createElement('button');
+  delBtn.className = 'block-delete-btn';
+  delBtn.title = 'Delete block'; delBtn.textContent = '✕';
+  delBtn.onclick = function(e) { e.stopPropagation(); deleteBlock(this.closest('.script-block')); };
 
   const el = document.createElement('div');
   el.className = type;
@@ -1360,613 +956,391 @@ function createBlockElement(type, html, id, isBookmarked) {
 
   block.appendChild(label);
   block.appendChild(bmBtn);
+  block.appendChild(delBtn);
   block.appendChild(el);
-
   return block;
 }
 
 function addElement(type) {
-  const page = document.getElementById('scriptPage');
-  const refsSection = document.getElementById('referencesSection');
   const block = createBlockElement(type, '', null, false);
   block.classList.add('new-block');
 
-  // Insert before references section
-  page.insertBefore(block, refsSection);
+  const active = document.activeElement;
+  if (active && active.closest('.script-block')) {
+    // Insert after current block
+    active.closest('.script-block').after(block);
+  } else {
+    // Add to last page
+    const pages = document.querySelectorAll('.script-page');
+    const lastContent = pages[pages.length - 1].querySelector('.page-content');
+    lastContent.appendChild(block);
+  }
 
   const el = block.querySelector('[contenteditable="true"]');
   el.focus();
-
   setTimeout(() => {
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
     block.classList.remove('new-block');
-  }, 350);
+  }, 100);
 
   debouncedSave();
-  debouncedPageBreaks();
+  scheduleReflow();
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// BLOCK DELETION
+// ═══════════════════════════════════════════════════════
+function deleteBlock(block) {
+  if (!block) return;
+  const blockId = block.dataset.blockId;
+
+  // Remove from bookmarks
+  if (bookmarks.has(blockId)) { bookmarks.delete(blockId); renderBookmarks(); }
+
+  // Find adjacent block to focus
+  const allBlocks = Array.from(document.querySelectorAll('.script-block'));
+  const idx = allBlocks.indexOf(block);
+  const target = allBlocks[idx - 1] || allBlocks[idx + 1];
+
+  block.remove();
+
+  if (target) {
+    const el = target.querySelector('[contenteditable="true"]');
+    if (el) { el.focus(); placeCaretAtEnd(el); }
+  }
+
+  debouncedSave();
+  scheduleReflow();
+  showToast('Block deleted');
+}
+
+function placeCaretAtEnd(el) {
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+// ═══════════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 document.addEventListener('keydown', (e) => {
-  if (!e.altKey) return;
-  const map = {
-    's': 'scene-heading',
-    'a': 'action',
-    'c': 'character',
-    'd': 'dialogue',
-    'p': 'parenthetical',
-    't': 'transition',
-    'g': 'song-cue'
-  };
-  const key = e.key.toLowerCase();
-  if (map[key]) {
-    e.preventDefault();
-    addElement(map[key]);
+  // Alt shortcuts for adding elements
+  if (e.altKey) {
+    const map = { 's':'scene-heading','a':'action','c':'character','d':'dialogue','p':'parenthetical','t':'transition','g':'song-cue' };
+    const key = e.key.toLowerCase();
+    if (map[key]) { e.preventDefault(); addElement(map[key]); }
+  }
+
+  // Backspace/Delete on empty block → delete the block
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    const active = document.activeElement;
+    if (active && active.getAttribute('contenteditable') === 'true' && active.closest('.script-block')) {
+      const text = active.textContent.trim();
+      const html = active.innerHTML.replace(/<br\s*\/?>/gi, '').trim();
+      if (text === '' && (html === '' || html === '<br>')) {
+        e.preventDefault();
+        deleteBlock(active.closest('.script-block'));
+      }
+    }
   }
 });
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // CLEAR SCRIPT
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 function clearScript() {
   if (!confirm('Clear the entire script? This cannot be undone.')) return;
-  const page = document.getElementById('scriptPage');
-  const titleBlock = page.querySelector('.script-title-block');
-  const refsSection = document.getElementById('referencesSection');
-  page.innerHTML = '';
-  page.appendChild(titleBlock);
-  page.appendChild(refsSection);
+  const container = document.getElementById('pagesContainer');
+
+  // Remove all pages except first
+  const pages = Array.from(container.querySelectorAll('.script-page'));
+  for (let i = pages.length - 1; i >= 1; i--) {
+    const gap = pages[i].previousElementSibling;
+    if (gap && gap.classList.contains('page-gap')) gap.remove();
+    pages[i].remove();
+  }
+
+  // Clear page 1 blocks
+  const content = pages[0].querySelector('.page-content');
+  content.querySelectorAll('.script-block').forEach(b => b.remove());
+
   document.getElementById('movieTitle').textContent = 'APNA TITLE LIKHO';
   document.getElementById('movieSubtitle').textContent = 'Written by / लिखा गया';
+
   citations = [];
   bookmarks = new Set();
   renderReferences();
   renderBookmarks();
   localStorage.removeItem(STORAGE_KEY);
+  document.getElementById('pageCountNum').textContent = '1';
   showToast('Script cleared');
 }
 
-// ═══════════════════════════════════════
-// DOWNLOAD AS TEXT
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// DOWNLOAD
+// ═══════════════════════════════════════════════════════
 function downloadScript() {
   const title = document.getElementById('movieTitle').textContent.trim();
   const subtitle = document.getElementById('movieSubtitle').textContent.trim();
+  let text = title + '\n' + subtitle + '\n\n' + '='.repeat(60) + '\n\n';
 
-  let text = title + '\n' + subtitle + '\n\n';
-  text += '='.repeat(60) + '\n\n';
-
-  const blocks = document.querySelectorAll('.script-block');
-  blocks.forEach(block => {
+  document.querySelectorAll('.script-block').forEach(block => {
     const contentEl = block.querySelector('[contenteditable="true"]');
     if (!contentEl) return;
-    const className = contentEl.className.trim();
-    const content = contentEl.textContent.trim();
-    if (!content) return;
-
-    if (className === 'scene-heading') {
-      text += '\n' + content.toUpperCase() + '\n\n';
-    } else if (className === 'action') {
-      text += content + '\n\n';
-    } else if (className === 'character') {
-      text += '                    ' + content.toUpperCase() + '\n';
-    } else if (className === 'parenthetical') {
-      text += '               (' + content.replace(/[()]/g, '') + ')\n';
-    } else if (className === 'dialogue') {
-      text += '          ' + content + '\n\n';
-    } else if (className === 'transition') {
-      text += '                                        ' + content.toUpperCase() + '\n\n';
-    } else if (className === 'song-cue') {
-      text += '\n--- ' + content + ' ---\n\n';
-    }
+    const cn = getBlockType(contentEl);
+    const c = contentEl.textContent.trim();
+    if (!c) return;
+    if (cn === 'scene-heading') text += '\n' + c.toUpperCase() + '\n\n';
+    else if (cn === 'action') text += c + '\n\n';
+    else if (cn === 'character') text += '                    ' + c.toUpperCase() + '\n';
+    else if (cn === 'parenthetical') text += '               (' + c.replace(/[()]/g,'') + ')\n';
+    else if (cn === 'dialogue') text += '          ' + c + '\n\n';
+    else if (cn === 'transition') text += '                                        ' + c.toUpperCase() + '\n\n';
+    else if (cn === 'song-cue') text += '\n--- ' + c + ' ---\n\n';
   });
 
-  // Add references
   if (citations.length > 0) {
-    text += '\n' + '='.repeat(60) + '\n';
-    text += 'REFERENCES\n\n';
-    citations.forEach((c, i) => {
-      text += '[' + (i + 1) + '] ' + c.text + '\n';
-    });
+    text += '\n' + '='.repeat(60) + '\nREFERENCES\n\n';
+    citations.forEach((c, i) => { text += '[' + (i+1) + '] ' + c.text + '\n'; });
   }
 
   const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url;
-  a.download = (title || 'my-script').toLowerCase().replace(/\s+/g, '-') + '.txt';
-  a.click();
-  URL.revokeObjectURL(url);
+  a.href = url; a.download = (title || 'script').toLowerCase().replace(/\s+/g, '-') + '.txt';
+  a.click(); URL.revokeObjectURL(url);
   showToast('Script downloaded');
 }
 
-// ═══════════════════════════════════════
-// EXPORT / IMPORT JSON
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════
 function exportJSON() {
   const state = gatherState();
   const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  const title = document.getElementById('movieTitle').textContent.trim();
-  a.download = (title || 'filmi-script').toLowerCase().replace(/\s+/g, '-') + '-backup.json';
-  a.click();
-  URL.revokeObjectURL(url);
+  a.download = (document.getElementById('movieTitle').textContent.trim() || 'filmi-script').toLowerCase().replace(/\s+/g,'-') + '-backup.json';
+  a.click(); URL.revokeObjectURL(url);
   showToast('Backup exported');
 }
 
 function importJSON(event) {
-  const file = event.target.files[0];
-  if (!file) return;
+  const file = event.target.files[0]; if (!file) return;
   const reader = new FileReader();
   reader.onload = function(e) {
     try {
       const state = JSON.parse(e.target.result);
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
       restoreState();
-      showToast('Script imported successfully');
-    } catch (err) {
-      alert('Invalid backup file.');
-    }
+      showToast('Script imported');
+    } catch(err) { alert('Invalid backup file.'); }
   };
   reader.readAsText(file);
   event.target.value = '';
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // TEXT HIGHLIGHTING
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 const floatToolbar = document.getElementById('floatToolbar');
 
-document.addEventListener('mouseup', (e) => {
-  // Small delay to let selection finalize
+document.addEventListener('mouseup', () => {
   setTimeout(() => {
     const sel = window.getSelection();
-    if (!sel || sel.isCollapsed || sel.rangeCount === 0) {
-      floatToolbar.classList.remove('visible');
-      return;
-    }
-
-    // Only show toolbar if selection is inside script page
+    if (!sel || sel.isCollapsed || sel.rangeCount === 0) { floatToolbar.classList.remove('visible'); return; }
     const range = sel.getRangeAt(0);
     const container = range.commonAncestorContainer;
-    const page = document.getElementById('scriptPage');
-    if (!page.contains(container)) {
-      floatToolbar.classList.remove('visible');
-      return;
-    }
-
-    // Position toolbar above selection
+    const inPage = container.closest ? container.closest('.script-page') : container.parentElement && container.parentElement.closest('.script-page');
+    if (!inPage) { floatToolbar.classList.remove('visible'); return; }
     const rect = range.getBoundingClientRect();
     floatToolbar.style.left = (rect.left + rect.width / 2 - 100) + 'px';
     floatToolbar.style.top = (rect.top - 44 + window.scrollY) + 'px';
     floatToolbar.classList.add('visible');
-
     savedSelection = { range: range.cloneRange() };
   }, 10);
 });
 
 document.addEventListener('mousedown', (e) => {
   if (!floatToolbar.contains(e.target)) {
-    // Don't hide immediately if clicking inside script page
-    setTimeout(() => {
-      const sel = window.getSelection();
-      if (!sel || sel.isCollapsed) {
-        floatToolbar.classList.remove('visible');
-      }
-    }, 200);
+    setTimeout(() => { const sel = window.getSelection(); if (!sel || sel.isCollapsed) floatToolbar.classList.remove('visible'); }, 200);
   }
 });
 
 function applyHighlight(color) {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return;
-
-  const range = sel.getRangeAt(0);
-  if (range.collapsed) return;
-
-  const mark = document.createElement('mark');
-  mark.className = 'hl-' + color;
-
-  try {
-    range.surroundContents(mark);
-  } catch (e) {
-    // If range crosses element boundaries, extract and wrap
-    const fragment = range.extractContents();
-    mark.appendChild(fragment);
-    range.insertNode(mark);
-  }
-
-  sel.removeAllRanges();
-  floatToolbar.classList.remove('visible');
-  debouncedSave();
+  const sel = window.getSelection(); if (!sel || sel.rangeCount === 0) return;
+  const range = sel.getRangeAt(0); if (range.collapsed) return;
+  const mark = document.createElement('mark'); mark.className = 'hl-' + color;
+  try { range.surroundContents(mark); } catch(e) { const frag = range.extractContents(); mark.appendChild(frag); range.insertNode(mark); }
+  sel.removeAllRanges(); floatToolbar.classList.remove('visible'); debouncedSave();
 }
 
 function clearHighlight() {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return;
-
+  const sel = window.getSelection(); if (!sel || sel.rangeCount === 0) return;
   const range = sel.getRangeAt(0);
-  const container = range.commonAncestorContainer;
-
-  // Find all marks in selection
-  const parent = container.nodeType === 3 ? container.parentElement : container;
-  const marks = parent.querySelectorAll ? parent.querySelectorAll('mark') : [];
-
-  marks.forEach(mark => {
-    if (range.intersectsNode(mark)) {
-      const textNode = document.createTextNode(mark.textContent);
-      mark.parentNode.replaceChild(textNode, mark);
-    }
-  });
-
-  // Also check if the container itself is a mark
-  if (parent.tagName === 'MARK') {
-    const textNode = document.createTextNode(parent.textContent);
-    parent.parentNode.replaceChild(textNode, parent);
+  const parent = range.commonAncestorContainer.nodeType === 3 ? range.commonAncestorContainer.parentElement : range.commonAncestorContainer;
+  if (parent.querySelectorAll) {
+    parent.querySelectorAll('mark').forEach(m => { if (range.intersectsNode(m)) { m.replaceWith(document.createTextNode(m.textContent)); } });
   }
-
-  sel.removeAllRanges();
-  floatToolbar.classList.remove('visible');
-  debouncedSave();
+  if (parent.tagName === 'MARK') parent.replaceWith(document.createTextNode(parent.textContent));
+  sel.removeAllRanges(); floatToolbar.classList.remove('visible'); debouncedSave();
 }
 
-// ═══════════════════════════════════════
-// BOOKMARKING
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// BOOKMARKS
+// ═══════════════════════════════════════════════════════
 function toggleBookmark(btn) {
   const block = btn.closest('.script-block');
-  const blockId = block.getAttribute('data-block-id');
-
-  if (bookmarks.has(blockId)) {
-    bookmarks.delete(blockId);
-    block.classList.remove('is-bookmarked');
-    btn.classList.remove('bookmarked');
-  } else {
-    bookmarks.add(blockId);
-    block.classList.add('is-bookmarked');
-    btn.classList.add('bookmarked');
-  }
-
-  renderBookmarks();
-  debouncedSave();
+  const id = block.getAttribute('data-block-id');
+  if (bookmarks.has(id)) { bookmarks.delete(id); block.classList.remove('is-bookmarked'); btn.classList.remove('bookmarked'); }
+  else { bookmarks.add(id); block.classList.add('is-bookmarked'); btn.classList.add('bookmarked'); }
+  renderBookmarks(); debouncedSave();
 }
 
 function renderBookmarks() {
   const list = document.getElementById('bookmarksList');
-  if (bookmarks.size === 0) {
-    list.innerHTML = '<div class="no-bookmarks">No bookmarks yet</div>';
-    return;
-  }
-
+  if (bookmarks.size === 0) { list.innerHTML = '<div class="no-bookmarks">No bookmarks yet</div>'; return; }
   list.innerHTML = '';
   bookmarks.forEach(id => {
-    const block = document.querySelector(`.script-block[data-block-id="${id}"]`);
+    const block = document.querySelector(`[data-block-id="${id}"]`);
     if (!block) return;
-
     const contentEl = block.querySelector('[contenteditable="true"]');
-    const text = contentEl ? contentEl.textContent.trim().substring(0, 35) : 'Empty';
+    const text = contentEl ? contentEl.textContent.trim().substring(0,35) : 'Empty';
     const label = block.querySelector('.element-label');
     const type = label ? label.textContent : '';
-
     const item = document.createElement('div');
     item.className = 'bookmark-item';
-    item.innerHTML = `
-      <span>🔖</span>
-      <span class="bm-label" title="${text}">${type}: ${text}${text.length >= 35 ? '…' : ''}</span>
-      <button class="bm-remove" title="Remove bookmark" onclick="event.stopPropagation(); removeBookmark('${id}')">✕</button>
-    `;
-    item.onclick = () => {
-      block.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      block.style.boxShadow = '0 0 0 2px rgba(232,168,56,0.5)';
-      setTimeout(() => block.style.boxShadow = '', 1500);
-    };
+    item.innerHTML = `<span>🔖</span><span class="bm-label" title="${text}">${type}: ${text}${text.length>=35?'…':''}</span><button class="bm-remove" title="Remove" onclick="event.stopPropagation();removeBookmark('${id}')">✕</button>`;
+    item.onclick = () => { block.scrollIntoView({behavior:'smooth',block:'center'}); block.style.boxShadow='0 0 0 2px rgba(232,168,56,0.5)'; setTimeout(()=>block.style.boxShadow='',1500); };
     list.appendChild(item);
   });
 }
 
 function removeBookmark(id) {
   bookmarks.delete(id);
-  const block = document.querySelector(`.script-block[data-block-id="${id}"]`);
-  if (block) {
-    block.classList.remove('is-bookmarked');
-    const btn = block.querySelector('.bookmark-toggle');
-    if (btn) btn.classList.remove('bookmarked');
-  }
-  renderBookmarks();
-  debouncedSave();
+  const block = document.querySelector(`[data-block-id="${id}"]`);
+  if (block) { block.classList.remove('is-bookmarked'); const btn = block.querySelector('.bookmark-toggle'); if (btn) btn.classList.remove('bookmarked'); }
+  renderBookmarks(); debouncedSave();
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // CITATIONS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 function openCitationModal() {
   const sel = window.getSelection();
-  if (sel && sel.rangeCount > 0) {
-    savedSelection = { range: sel.getRangeAt(0).cloneRange() };
-  }
+  if (sel && sel.rangeCount > 0) savedSelection = { range: sel.getRangeAt(0).cloneRange() };
   document.getElementById('citationModal').classList.add('visible');
   document.getElementById('citationText').focus();
   floatToolbar.classList.remove('visible');
 }
-
-function closeCitationModal() {
-  document.getElementById('citationModal').classList.remove('visible');
-  document.getElementById('citationText').value = '';
-}
+function closeCitationModal() { document.getElementById('citationModal').classList.remove('visible'); document.getElementById('citationText').value = ''; }
 
 function saveCitation() {
-  const text = document.getElementById('citationText').value.trim();
-  if (!text) return;
-
-  const citNum = citations.length + 1;
-  citations.push({ num: citNum, text });
-
-  // Insert superscript at saved selection position
+  const text = document.getElementById('citationText').value.trim(); if (!text) return;
+  const num = citations.length + 1;
+  citations.push({ num, text });
   if (savedSelection && savedSelection.range) {
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(savedSelection.range);
-
-    const range = sel.getRangeAt(0);
-    range.collapse(false); // collapse to end of selection
-
-    const sup = document.createElement('sup');
-    sup.className = 'citation-ref';
-    sup.textContent = '[' + citNum + ']';
-    sup.title = text;
-    sup.setAttribute('data-citation', citNum);
-    range.insertNode(sup);
-
-    sel.removeAllRanges();
+    const sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(savedSelection.range);
+    const range = sel.getRangeAt(0); range.collapse(false);
+    const sup = document.createElement('sup'); sup.className = 'citation-ref';
+    sup.textContent = '['+num+']'; sup.title = text; sup.setAttribute('data-citation', num);
+    range.insertNode(sup); sel.removeAllRanges();
   }
-
-  renderReferences();
-  closeCitationModal();
-  debouncedSave();
-  showToast('Citation [' + citNum + '] added');
+  renderReferences(); closeCitationModal(); debouncedSave(); showToast('Citation ['+num+'] added');
 }
 
 function renderReferences() {
   const section = document.getElementById('referencesSection');
   const list = document.getElementById('referencesList');
-
-  if (citations.length === 0) {
-    section.style.display = 'none';
-    return;
-  }
-
-  section.style.display = 'block';
-  list.innerHTML = '';
-
+  if (citations.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'block'; list.innerHTML = '';
   citations.forEach((c, i) => {
-    const item = document.createElement('div');
-    item.className = 'ref-item';
-    item.innerHTML = `
-      <span class="ref-num">[${i + 1}]</span>
-      <span class="ref-text">${c.text}</span>
-      <button class="ref-delete" onclick="deleteCitation(${i})" title="Remove">✕</button>
-    `;
+    const item = document.createElement('div'); item.className = 'ref-item';
+    item.innerHTML = `<span class="ref-num">[${i+1}]</span><span class="ref-text">${c.text}</span><button class="ref-delete" onclick="deleteCitation(${i})" title="Remove">✕</button>`;
     list.appendChild(item);
   });
 }
 
 function deleteCitation(index) {
-  const citNum = index + 1;
-  // Remove superscript from script
-  const sup = document.querySelector(`sup.citation-ref[data-citation="${citNum}"]`);
+  const num = index + 1;
+  const sup = document.querySelector(`sup.citation-ref[data-citation="${num}"]`);
   if (sup) sup.remove();
-
   citations.splice(index, 1);
-
-  // Re-number remaining citations
-  citations.forEach((c, i) => {
-    c.num = i + 1;
-  });
-
-  // Update all superscripts
+  citations.forEach((c,i) => { c.num = i+1; });
   document.querySelectorAll('sup.citation-ref').forEach(s => {
-    const oldNum = parseInt(s.getAttribute('data-citation'));
-    // Find new position
     let found = false;
-    citations.forEach((c, i) => {
-      if (!found && s.title === c.text) {
-        s.textContent = '[' + (i + 1) + ']';
-        s.setAttribute('data-citation', i + 1);
-        found = true;
-      }
-    });
+    citations.forEach((c,i) => { if (!found && s.title === c.text) { s.textContent='['+(i+1)+']'; s.setAttribute('data-citation',i+1); found=true; } });
     if (!found) s.remove();
   });
-
-  renderReferences();
-  debouncedSave();
+  renderReferences(); debouncedSave();
 }
 
-// ═══════════════════════════════════════
-// TOAST NOTIFICATIONS
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════
 function showToast(message) {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-
-  const toast = document.createElement('div');
-  toast.className = 'toast';
-  toast.innerHTML = '✓ ' + message;
-  document.body.appendChild(toast);
+  const existing = document.querySelector('.toast'); if (existing) existing.remove();
+  const toast = document.createElement('div'); toast.className = 'toast';
+  toast.innerHTML = '✓ ' + message; document.body.appendChild(toast);
   setTimeout(() => toast.remove(), 2600);
 }
 
-// ═══════════════════════════════════════
-// PAGE BREAKS (US Letter: 1056px height)
-// ═══════════════════════════════════════
-const PAGE_TOTAL_HEIGHT = 1056; // 11" at 96dpi — US Letter
-const PAGE_PADDING_TOP = 72;
-const PAGE_PADDING_BOTTOM = 72;
-const PAGE_CONTENT_HEIGHT = PAGE_TOTAL_HEIGHT - PAGE_PADDING_TOP - PAGE_PADDING_BOTTOM; // 912px
-const PAGE_BREAK_HEIGHT = 48; // gap between pages
-const PAGE_FOOTER_HEIGHT = 28; // page number footer
-let pageBreakTimeout = null;
-
-function updatePageBreaks() {
-  const page = document.getElementById('scriptPage');
-  if (!page) return;
-
-  // Remove existing page breaks and footers
-  page.querySelectorAll('.page-break, .page-footer').forEach(el => el.remove());
-
-  // Get the top of content area
-  const pageRect = page.getBoundingClientRect();
-  const contentStartY = pageRect.top + PAGE_PADDING_TOP;
-
-  // Get all content children (not page breaks/footers)
-  const children = Array.from(page.children).filter(el =>
-    !el.classList.contains('page-break') && !el.classList.contains('page-footer')
-  );
-
-  if (children.length === 0) {
-    updatePageCounter(1);
-    ensureMinPageHeight(1);
-    return;
-  }
-
-  // Calculate page breaks
-  let pageNum = 1;
-  let nextBreakY = contentStartY + PAGE_CONTENT_HEIGHT;
-  const insertions = [];
-
-  for (let i = 0; i < children.length; i++) {
-    const child = children[i];
-    const childRect = child.getBoundingClientRect();
-    const childBottom = childRect.bottom;
-
-    while (childBottom > nextBreakY) {
-      pageNum++;
-      insertions.push({ before: child, pageNum });
-      nextBreakY += PAGE_CONTENT_HEIGHT + PAGE_BREAK_HEIGHT + PAGE_FOOTER_HEIGHT;
-    }
-  }
-
-  // Insert page footer + page break elements
-  insertions.forEach(ins => {
-    // Page footer (page number of the page above)
-    const footer = document.createElement('div');
-    footer.className = 'page-footer';
-    footer.innerHTML = '<span class="page-footer-num">' + (ins.pageNum - 1) + '</span>';
-    page.insertBefore(footer, ins.before);
-
-    // Page break gap
-    const pb = document.createElement('div');
-    pb.className = 'page-break';
-    page.insertBefore(pb, ins.before);
-  });
-
-  updatePageCounter(pageNum);
-  ensureMinPageHeight(pageNum);
-}
-
-function ensureMinPageHeight(pageCount) {
-  // Make the page tall enough so each page section fills to the bottom
-  const page = document.getElementById('scriptPage');
-  if (!page) return;
-  const totalHeight = (pageCount * PAGE_TOTAL_HEIGHT) +
-    ((pageCount - 1) * (PAGE_BREAK_HEIGHT + PAGE_FOOTER_HEIGHT));
-  page.style.minHeight = totalHeight + 'px';
-}
-
-function updatePageCounter(count) {
-  const numEl = document.getElementById('pageCountNum');
-  if (numEl) {
-    numEl.textContent = count;
-  }
-}
-
-function debouncedPageBreaks() {
-  clearTimeout(pageBreakTimeout);
-  pageBreakTimeout = setTimeout(updatePageBreaks, 300);
-}
-
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // CLICK-TO-TYPE (click empty page space)
-// ═══════════════════════════════════════
-document.getElementById('scriptPage').addEventListener('click', (e) => {
-  const page = document.getElementById('scriptPage');
-  const target = e.target;
+// ═══════════════════════════════════════════════════════
+function handlePageClick(e) {
+  const pageContent = e.currentTarget;
+  if (e.target !== pageContent) return; // only clicks on empty space
 
-  // Only handle clicks directly on the script-page background
-  if (target !== page) return;
-
-  // Find the nearest block above the click point
   const clickY = e.clientY;
-  const blocks = Array.from(page.querySelectorAll('.script-block'));
-  const refsSection = document.getElementById('referencesSection');
+  const blocks = Array.from(pageContent.querySelectorAll('.script-block'));
+  let insertBefore = null;
 
-  let insertBefore = refsSection; // default: insert at end
-
-  for (let i = 0; i < blocks.length; i++) {
-    const rect = blocks[i].getBoundingClientRect();
-    if (rect.top > clickY) {
-      insertBefore = blocks[i];
-      break;
-    }
+  for (const b of blocks) {
+    if (b.getBoundingClientRect().top > clickY) { insertBefore = b; break; }
   }
 
-  // Create a new action block at the click position
   const block = createBlockElement('action', '', null, false);
-  block.classList.add('new-block');
-  page.insertBefore(block, insertBefore);
+  if (insertBefore) pageContent.insertBefore(block, insertBefore);
+  else pageContent.appendChild(block);
 
-  const el = block.querySelector('[contenteditable="true"]');
-  el.focus();
-
-  setTimeout(() => {
-    block.classList.remove('new-block');
-  }, 350);
-
+  block.querySelector('[contenteditable="true"]').focus();
   debouncedSave();
-  debouncedPageBreaks();
-});
+  scheduleReflow();
+}
 
-// ═══════════════════════════════════════
+// Wire up click-to-type on page 1
+document.querySelector('.script-page[data-page="1"] .page-content').addEventListener('click', handlePageClick);
+
+// ═══════════════════════════════════════════════════════
 // EVENT LISTENERS
-// ═══════════════════════════════════════
-// Auto-save and page breaks on any input in the script page
-document.getElementById('scriptPage').addEventListener('input', () => {
+// ═══════════════════════════════════════════════════════
+// Auto-save + reflow on input anywhere in the pages container
+document.getElementById('pagesContainer').addEventListener('input', () => {
   debouncedSave();
-  debouncedPageBreaks();
+  scheduleReflow();
 });
+
 document.getElementById('movieTitle').addEventListener('input', debouncedSave);
 document.getElementById('movieSubtitle').addEventListener('input', debouncedSave);
 
-// Recalculate page breaks on window resize
-window.addEventListener('resize', debouncedPageBreaks);
-
-// Close citation modal on overlay click
+// Close citation modal
 document.getElementById('citationModal').addEventListener('click', (e) => {
-  if (e.target === document.getElementById('citationModal')) {
-    closeCitationModal();
-  }
+  if (e.target === document.getElementById('citationModal')) closeCitationModal();
 });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeCitationModal(); });
 
-// Escape to close modal
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    closeCitationModal();
-  }
-});
-
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
   restoreState();
-  // Initial page break calculation after a short delay for rendering
-  setTimeout(updatePageBreaks, 200);
+  setTimeout(reflow, 150);
 });
 </script>
-
 </body>
 </html>
