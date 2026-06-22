@@ -137,11 +137,12 @@ export function DocumentProvider({ children, uid }) {
         });
         if (!activeDraftId) setActiveDraftId(id);
         setLastSaved(new Date());
-        // Clear offline pending on successful Firestore write
         localStorage.removeItem(offlineKey(uid));
       } catch (err) {
-        console.error('[DocumentContext] Autosave to Firestore failed (offline?):', err);
-        setIsOffline(true);
+        console.error('[DocumentContext] Autosave to Firestore failed:', err);
+        if (!navigator.onLine) {
+          setIsOffline(true);
+        }
       } finally {
         setIsSaving(false);
       }
@@ -293,7 +294,9 @@ export function DocumentProvider({ children, uid }) {
     } catch (err) {
       console.error('[DocumentContext] explicitSave failed:', err);
       saveToLocalStorage();
-      setIsOffline(true);
+      if (!navigator.onLine) {
+        setIsOffline(true);
+      }
       return null;
     } finally {
       setIsSaving(false);
