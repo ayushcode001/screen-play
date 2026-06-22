@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ── Per-user drafts ──────────────────────────────────────────────────────
+    // Only the authenticated user who owns the document can read or write it.
+    match /users/{uid}/drafts/{draftId} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // ── Deny everything else ─────────────────────────────────────────────────
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400;1,700&family=Noto+Serif+Devanagari:wght@400;600;700&family=Tiro+Devanagari+Hindi:ital@0;1&family=Vesper+Libre:wght@400;700;900&family=Yatra+One&display=swap');
+
+:root {
+  --bg-app: #f9f9f9;
+  --bg-surface: #ffffff;
+  --bg-panel: #ffffff;
+  
+  --text-main: #111111;
+  --text-muted: #666666;
+  --text-light: #999999;
+  
+  --border-color: #e5e5e5;
+  --border-focus: #c2c2c2;
+  
+  --accent: #222222;
+  --accent-hover: #000000;
+  
+  --paper-bg: #ffffff;
+  --paper-shadow: 0 4px 20px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.02);
+  
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  --font-ui: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  
+  --font-screenplay: 'Courier Prime', Courier, monospace;
+  --font-natak: 'Noto Serif Devanagari', 'Vesper Libre', serif;
+  --font-story: 'Crimson Pro', serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-ui);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d1d1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b1b1b1;
+}
+
+/* Base Utility Classes */
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+
+[contenteditable="true"]:empty:before {
+  content: attr(placeholder);
+  color: #c4c4c4;
+  pointer-events: none;
+}
+
+[contenteditable="true"] {
+  outline: none;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+/* Block styles */
+.block-element {
+  position: relative;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.block-label {
+  position: absolute;
+  left: -70px;
+  top: 4px;
+  font-size: 0.55rem;
+  font-family: var(--font-mono);
+  color: var(--text-light);
+  text-transform: uppercase;
+  user-select: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.block-element:hover .block-label,
+.block-element:focus-within .block-label {
+  opacity: 1;
+}
+
+/* Screenplay Formatting */
+.mode-screenplay .script-page { font-family: var(--font-screenplay); }
+.mode-natak .script-page { font-family: var(--font-natak); }
+.mode-story .script-page { font-family: var(--font-story); }
+
+.scene-heading { font-weight: 700; text-transform: uppercase; border-bottom: 1px solid #eee; padding-bottom: 2px; }
+.action { font-weight: 400; }
+.character { font-weight: 700; text-transform: uppercase; margin-left: 25%; margin-bottom: 2px; }
+.dialogue { margin-left: 15%; margin-right: 15%; }
+.parenthetical { font-style: italic; margin-left: 20%; margin-right: 20%; }
+.transition { font-weight: 700; text-transform: uppercase; text-align: right; margin-top: 12px; }
+.song-cue { font-style: italic; text-align: center; margin: 12px 0; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 4px 0; }
+
+/* Natak Formatting */
+.anka { font-family: 'Yatra One', cursive; font-size: 1.2rem; text-align: center; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 8px 0; margin-bottom: 12px; }
+.drishya { font-weight: 700; font-size: 1.05rem; border-bottom: 1px dashed #eee; padding-bottom: 2px; margin-bottom: 8px; }
+.nirdesh { font-style: italic; color: #555; padding-left: 12px; border-left: 2px solid #ddd; }
+.patra { font-weight: 700; margin-left: 25%; }
+.swagat { font-style: italic; margin-left: 25%; color: #555; }
+.samvaad { margin-left: 10%; margin-right: 10%; }
+.geet { font-family: 'Tiro Devanagari Hindi', serif; font-style: italic; text-align: center; background: #fafafa; padding: 12px; border: 1px solid #eee; }
+.viraam { font-style: italic; text-align: center; color: #666; letter-spacing: 2px; }
+.parda { font-family: 'Yatra One', cursive; text-align: right; border-top: 1px solid #eee; padding-top: 8px; margin-top: 12px; }
+
+/* Story Formatting */
+.chapter { font-size: 1.5rem; font-weight: 700; text-align: center; margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+.paragraph { text-indent: 2rem; margin-bottom: 8px; line-height: 1.6; }
+.section-break { text-align: center; letter-spacing: 4px; margin: 20px 0; }
